@@ -3,12 +3,15 @@ import Image from "next/image";
 export default function HelloWorld() {
   return (
     <section className="flex flex-col gap-8 items-center">
+      {/* https://nextjs.org/docs/pages/api-reference/components/image */}
       <Image
         className="rounded-full"
         src="/headshot.jpg"
         alt="Avitar"
-        width={180}
-        height={38}
+        // The width and height props represent the intrinsic image width in pixels. This property is used to infer the correct aspect ratio of the image and avoid layout shift during loading.
+        // It does not determine the rendered size of the image, which is controlled by CSS, similar to the width attribute in the HTML <img> tag.
+        width={400}
+        height={400}
         priority
       />
       <h1 className="text-4xl sm:text-5xl font-bold">Graham Perich</h1>
