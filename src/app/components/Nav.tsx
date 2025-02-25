@@ -1,11 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export default function Nav() {
-  const pathname = usePathname();
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 py-3 px-6 backdrop-blur-md bg-gray-900/80 border-b border-blue-900/30 shadow-lg">
       <div className="container mx-auto flex justify-start">
