@@ -1,6 +1,6 @@
 "use client";
 
-import expenses from "./2024_expenses.json";
+import expenses from "./2024_expenses_percentage.json";
 
 import {
   Chart as ChartJS,
@@ -79,7 +79,7 @@ ChartJS.register(
   Flow
 );
 
-const MOCK_NET_INCOME = 267_000;
+const MOCK_NET_INCOME = 100; // Represents 100%
 
 type ExpensesData = {
   [parentCategoryName: string]: {
@@ -143,14 +143,14 @@ function formatExpensesData(
 
   const savings = netIncome - expenseTotal;
   const finalData = [
-    { from: "Net Income", to: "Savings", flow: parseInt(savings.toFixed()) },
+    { from: "Net Income", to: "Savings", flow: parseFloat(savings.toFixed(2)) },
     ...data,
   ];
 
   return {
     datasets: [
       {
-        label: "2024 Finance Wrapped",
+        label: "2024 Finance Wrapped (% of Net Income)",
         data: finalData,
         colorFrom: (c) => nodeColors[c.dataset.data[c.dataIndex].from],
         colorTo: (c) => nodeColors[c.dataset.data[c.dataIndex].to],
@@ -179,7 +179,7 @@ const options = {
   plugins: {
     title: {
       display: true,
-      text: "2024 Finances Wrapped",
+      text: "2024 Finances Wrapped (Percentage Breakdown)",
       font: {
         size: 22,
         weight: "bold",
@@ -206,6 +206,12 @@ const options = {
       cornerRadius: 8,
       padding: 12,
       boxPadding: 6,
+      callbacks: {
+        label: function(context) {
+          const flowValue = context.dataset.data[context.dataIndex].flow;
+          return `${flowValue.toFixed(2)}% of Net Income`;
+        }
+      }
     },
     legend: {
       labels: {

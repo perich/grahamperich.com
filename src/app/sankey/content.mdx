@@ -3,6 +3,8 @@ import MdxLayout from '../components/mdx-layout'
 import SankeyDiagram from './SankeyDiagram'
 import CodeBlock from '../components/CodeBlock'
 
+export const date = "2024-01-09"
+
 # Building a Spending Visualization Sankey Diagram with React and Chart.js
 
 <div className="flex flex-col gap-2 my-6 self-start">
@@ -126,5 +128,5 @@ I also updated the script to use the Bun JS runtime and package manager instead 
 <SankeyDiagram/>
 
 export default function SankeyBlogContent({ children }) {
-  return <MdxLayout>{children}</MdxLayout>
+  return <MdxLayout date={date}>{children}</MdxLayout>
 }

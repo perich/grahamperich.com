@@ -1,5 +1,11 @@
 // https://nextjs.org/docs/pages/building-your-application/configuring/mdx#using-tailwind-typography-plugin
-export default function MdxLayout({ children }: { children: React.ReactNode }) {
+export default function MdxLayout({ 
+  children,
+  date
+}: { 
+  children: React.ReactNode;
+  date?: string;
+}) {
   // Create any shared layout or styles here
   return (
     <div
@@ -21,6 +27,17 @@ export default function MdxLayout({ children }: { children: React.ReactNode }) {
       prose-li:my-1 prose-li:text-gray-300
       prose-img:rounded-lg prose-img:shadow-md"
     >
+      {date && (
+        <div className="mb-8 w-full">
+          <time dateTime={date} className="text-sm text-gray-400 italic">
+            {new Date(date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+        </div>
+      )}
       {children}
     </div>
   );
