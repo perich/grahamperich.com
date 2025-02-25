@@ -9,7 +9,7 @@ export default function Home() {
         <Writing />
       </main>
 
-      <footer className="row-start-2 text-center text-sm text-gray-500">
+      <footer className="row-start-2 text-center text-sm text-gray-300">
         © {new Date().getFullYear()} Graham Perich
       </footer>
     </div>

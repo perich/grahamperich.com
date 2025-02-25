@@ -5,25 +5,31 @@ import CodeBlock from '../components/CodeBlock'
 
 # Building a Spending Visualization Sankey Diagram with React and Chart.js
 
-### My Personal Finance "2024 Wrapped"
+<div className="flex flex-col gap-2 my-6 self-start">
+  <div className="text-blue-400 text-lg font-medium">My Personal Finance "2024 Wrapped"</div>
+  <div className="border-l-4 border-blue-500 pl-4 italic text-gray-400">An interactive journey through a year of financial data</div>
+</div>
 
-#### Intro
+## Introduction
 2024 has been a whirlwind year. Between balancing a busy year at work and helping my wife chase around our energetic two-year-old, I haven't had time to work on personal projects very much. With a couple weeks off work for the holidays, I was able to get to one of them though—an exhaustive review of my family's finances and spending patterns. This is something I've been wanting to do for a while but have been putting off. I decided to make it fun by using it as an excuse to do some programming.
 
-For the last 5 years i've been using the (Copilot Money)[https://copilot.money/] app to track and categorize all of my family's income and expenses. They offer a handy `.csv` export feature if you want to get all of your raw transaction data. With this in mind, I came up with the idea of creating a "2024 Finance Wrapped" for my family. I've seen people in personal finance circles on social media share (Sankey Diagrams)[https://en.wikipedia.org/wiki/Sankey_diagram] to break down their spending and I really like this idea. I'm going to do the same thing, but with a React spin on it. Instead of generating a single, static Sankey diagram I'll make a dynamic one with React and ChartJS. This affords us the ability to model theoretical scenarios e.g. "how would things look if my income went up or down?", "how would things look if we cut spending in XYZ category?", "how would things look if we sent the kids to private school?"
+For the last 5 years i've been using the [Copilot Money](https://copilot.money/) app to track and categorize all of my family's income and expenses. They offer a handy `.csv` export feature if you want to get all of your raw transaction data. With this in mind, I came up with the idea of creating a "2024 Finance Wrapped" for my family. I've seen people in personal finance circles on social media share [Sankey Diagrams](https://en.wikipedia.org/wiki/Sankey_diagram) to break down their spending and I really like this idea. I'm going to do the same thing, but with a React spin on it. Instead of generating a single, static Sankey diagram I'll make a dynamic one with React and ChartJS. This affords us the ability to model theoretical scenarios e.g. "how would things look if my income went up or down?", "how would things look if we cut spending in XYZ category?", "how would things look if we sent the kids to private school?"
 
 The rest of this post will walk you through step-by-step how I approached this project. At the end, you can view and interact with my final finished Sankey Diagram React Component.
 
-TODO: SHOW AN IMAGE OF A SANKEY DIAGRAM AS AN EXAMPLE
+## Implementation Journey
 
-#### Implementation
-
-##### Enumerating Requirements
+<div className="bg-gray-800 border-l-4 border-blue-500 p-4 rounded my-6">
+  <h3 className="text-blue-400 font-semibold text-lg mb-2">📝 Project Requirements</h3>
 
 Here are the requirements I settled on for the "2024 Wrapped" Sankey Diagram:
 - It should start on the left with net income as a single category that everything else deducts from
 - Users should be able to arbitrarily increase the height and width of the Sankey diagram, even if that causes viewport overflows. Really large diagrams with hundreds of categories will be more ergonomic and useful if the user can size them however they see fit (you'll see what I mean on this point when you take a look at the final component at the end of this page).
 - By default all categories should be displayed, but users should be able to show/hide any of them as well. This is useful because some categories are really large e.g. Mortgage payment, Federal Taxes, and this makes viewing information about smaller categories harder since everything is scaled relatively.
+</div>
+
+<div className="bg-gray-800 border-l-4 border-green-500 p-4 rounded my-6">
+  <h3 className="text-green-400 font-semibold text-lg mb-2">🔍 Technology Selection</h3>
 
 First things first, I need to get the lay of the land in the JavaScript charting ecosystem. This site is built with React and I've been using React professionally for years, so I'll prefer libraries with good React wrappers. I played around with several, including D3, react-google-charts, and finally settled on ChartJS.
 
@@ -32,8 +38,10 @@ I built a proof of concept with `react-google-charts` but it didn't have enough 
 I started evaluating D3 with the `d3-sankey-plugin` next, but abandoned it in favor of ChartJS for a couple reasons:
 1. Native `<canvas>` support—D3 by default inserts `<svg>` elements on the DOM when generating its charts (although `d3-canvas` is a thing) whereas ChartJS outputs a `<canvas>`. I'm a fan of `<canvas>` in general because of its performance advantages, and love having another excuse to build something with it. Also, i'd like to eventually expand this Sankey diagram project to fan out and include every single transaction from each fiscal year—meaning there could be several thousand DOM nodes rendered if we went with `<svg>`. 
 2. Out of the box functionality—chartJS has pretty impressive defaults. You get animations and viewport size responsiveness for free, for example. 
+</div>
 
-##### Structuring Data
+<div className="bg-gray-800 border-l-4 border-purple-500 p-4 rounded my-6">
+  <h3 className="text-purple-400 font-semibold text-lg mb-2">🏗️ Data Structure Design</h3>
 
 Next I need to convert the `.csv` export to JSON. First, let's define a TypeScript type for the ideal JSON object. Then we can use that plus some LLM prompting to generate a script. We could write it by hand of course, but it's a pretty trivial script and time is of the essence. I can hear my toddler in the hallway outside of my home office; my wife can only keep him at bay for so long!
 
@@ -95,16 +103,28 @@ So I'll define these types...
 
 ..and then ask Claude 3.5 Sonnet to do the rest! After a few messages back and forth clarifying the `.csv` column names with Claude, we get a finished working product.
 I also updated the script to use the Bun JS runtime and package manager instead of NodeJS and NPM. I've been using Bun for all of my scripting work lately and it's a joy to work with—it's lightning fast and comes with an excellent standard library. 
+</div>
 
-You can view the full script here:
-https://github.com/perich/copilot-money-csv-parser
+<div className="bg-gray-800 border-l-4 border-yellow-500 p-4 rounded my-6 w-full">
+  <h3 className="text-yellow-400 font-semibold text-lg mb-2">🔗 Open Source Script</h3>
+  <p className="mb-3">I've made the full parser script available on GitHub:</p>
+  <a href="https://github.com/perich/copilot-money-csv-parser" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2 px-4 rounded-md transition-colors duration-200">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+    </svg>
+    View on GitHub
+  </a>
+</div>
 
-#### Final Product
+## Final Product
 
-Now that we have our data formatted as JSON the last step is to hook it up to ChartJS, make it look nice, and add the controls we defined in the [Enumerating Requirements](##### Enumerating Requirements) section above. You can view the source code 
+<div className="mb-6 text-gray-300">
+  Now that we have our data formatted as JSON the last step is to hook it up to ChartJS, make it look nice, and add the controls we defined in the requirements section above. Below is the interactive Sankey diagram component showing my family's 2024 finances.     I plan to continue refining this tool and add more features in the future, such as the ability to save different scenarios, compare year-over-year changes, and incorporate more detailed transaction filtering.
+
+</div>
 
 <SankeyDiagram/>
 
 export default function SankeyBlogContent({ children }) {
-    return <MdxLayout>{children}</MdxLayout>
+  return <MdxLayout>{children}</MdxLayout>
 }

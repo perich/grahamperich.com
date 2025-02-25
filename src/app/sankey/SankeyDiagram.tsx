@@ -67,8 +67,6 @@ function generateBrightColor(): string {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-// const getHover = (key) => colors[key];
-// const getColor = (key) => colors[key];
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -182,26 +180,50 @@ const options = {
     title: {
       display: true,
       text: "2024 Finances Wrapped",
+      font: {
+        size: 22,
+        weight: "bold",
+        family:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
+      },
+      color: "#f8fafc", // slate-50
+      padding: {
+        top: 20,
+        bottom: 30,
+      },
+    },
+    tooltip: {
+      backgroundColor: "rgba(30, 41, 59, 0.9)", // slate-800 with opacity
+      titleFont: {
+        weight: "bold",
+        size: 14,
+      },
+      bodyFont: {
+        size: 13,
+      },
+      borderColor: "rgba(99, 102, 241, 0.5)", // indigo-500 with opacity
+      borderWidth: 1,
+      cornerRadius: 8,
+      padding: 12,
+      boxPadding: 6,
+    },
+    legend: {
+      labels: {
+        color: "#cbd5e1", // slate-300
+        font: {
+          size: 13,
+        },
+      },
     },
   },
   layout: {
     padding: {
-      top: 0,
-      bottom: 20,
+      top: 10,
+      right: 20,
+      bottom: 30,
+      left: 20,
     },
   },
-  // scales: {
-  //   y: {
-  //     beginAtZero: true,
-  //     suggestedMin: 1800,
-  //     suggestedMax: 2000,
-  //   },
-  //   x: {
-  //     beginAtZero: true,
-  //     suggestedMin: 1800,
-  //     suggestedMax: 2000,
-  //   },
-  // },
 };
 
 const SankeyDiagram = () => {
@@ -209,41 +231,54 @@ const SankeyDiagram = () => {
   const [width, setWidth] = useState(1000);
 
   return (
-    <>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="height" className="text-sm">
-          Chart Height: {height}px
-        </label>
-        <input
-          type="range"
-          id="height"
-          min="800"
-          max="4000"
-          value={height}
-          onChange={(e) => setHeight(Number(e.target.value))}
-          className="w-64"
-        />
+    <div className="my-4">
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 mb-6">
+        <div className="font-semibold text-gray-200 mb-6">Diagram Controls</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-3">
+            <label
+              htmlFor="height"
+              className="text-gray-300 text-sm font-medium"
+            >
+              Chart Height: <span className="text-blue-400">{height}px</span>
+            </label>
+            <input
+              type="range"
+              id="height"
+              min="800"
+              max="3000"
+              value={height}
+              onChange={(e) => setHeight(Number(e.target.value))}
+              className="w-full accent-blue-500 bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer"
+            />
+          </div>
 
-        <label htmlFor="width" className="text-sm">
-          Chart Width: {width}px
-        </label>
-        <input
-          type="range"
-          id="width"
-          min="800"
-          max="4000"
-          value={width}
-          onChange={(e) => setWidth(Number(e.target.value))}
-          className="w-64"
-        />
+          <div className="flex flex-col gap-3">
+            <label
+              htmlFor="width"
+              className="text-gray-300 text-sm font-medium"
+            >
+              Chart Width: <span className="text-blue-400">{width}px</span>
+            </label>
+            <input
+              type="range"
+              id="width"
+              min="800"
+              max={window.innerWidth}
+              value={width}
+              onChange={(e) => setWidth(Number(e.target.value))}
+              className="w-full accent-blue-500 bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
 
       <div
-        className="overflow-auto bg-slate-900 rounded-xl"
-        style={{ width: "100%", maxHeight: "80vh" }}
+        className="overflow-auto bg-gray-800 rounded-lg shadow-xl border border-gray-700"
+        style={{ width: "100%" }}
       >
         <div
-          className="chart-container"
+          className="chart-container p-4"
           style={{
             position: "relative",
             height: `${height}px`,
@@ -255,7 +290,7 @@ const SankeyDiagram = () => {
           <Chart type="sankey" data={sankeyData} options={options} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
