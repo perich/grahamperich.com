@@ -1,5 +1,5 @@
 import React from "react";
-import { Highlight, HighlightProps, themes } from "prism-react-renderer";
+import { Highlight, themes } from "prism-react-renderer";
 
 const dedentString = (code: string) => {
   // Split into lines and remove empty first/last lines from template literals
@@ -14,8 +14,12 @@ const dedentString = (code: string) => {
   const minIndent = lines
     .filter((line) => line.trim().length > 0)
     .reduce((min, line) => {
-      const indent = line.match(/^\s*/)[0].length;
-      return Math.min(min, indent);
+      const indentMatch = line.match(/^\s*/);
+      if (indentMatch) {
+        const indent = indentMatch[0].length;
+        return Math.min(min, indent);
+      }
+      return min;
     }, Infinity);
 
   // Remove the common indentation from all lines
