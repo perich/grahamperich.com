@@ -17,27 +17,27 @@ export default {
       typography: {
         DEFAULT: {
           css: {
-            maxWidth: '100%',
+            maxWidth: "100%",
           },
         },
       },
     },
   },
-  // https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#installation
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   plugins: [
+    // https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#installation
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require("@tailwindcss/typography"),
-    plugin(function({ addUtilities }) {
+    plugin(function ({ addUtilities }) {
       const newUtilities = {
-        '.text-gradient-gold': {
-          background: 'linear-gradient(to right, #f59e0b, #d97706, #f59e0b)',
-          '-webkit-background-clip': 'text',
-          'background-clip': 'text',
-          'color': 'transparent',
-          'display': 'inline-block',
+        ".text-gradient-gold": {
+          background: "linear-gradient(to right, #f59e0b, #d97706, #f59e0b)",
+          "-webkit-background-clip": "text",
+          "background-clip": "text",
+          color: "transparent",
+          display: "inline-block",
         },
-      }
-      addUtilities(newUtilities)
-    })
+      };
+      addUtilities(newUtilities);
+    }),
   ],
 } satisfies Config;
