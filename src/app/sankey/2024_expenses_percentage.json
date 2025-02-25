@@ -1,0 +1,87 @@
+{
+  "Shopping": {
+    "total": 12.57,
+    "categories": {
+      "Clothing": 4.1,
+      "Target": 2.46,
+      "Amazon": 1.14,
+      "Shops": 4.36,
+      "Beauty": 0.51
+    }
+  },
+  "Car & Transport": {
+    "total": 7.94,
+    "categories": {
+      "Car": 7.53,
+      "Transportation": 0.41
+    }
+  },
+  "Loans": {
+    "total": 1.35,
+    "categories": {}
+  },
+  "Food & Drink": {
+    "total": 13.66,
+    "categories": {
+      "Groceries": 6.98,
+      "Restaurants": 6.35,
+      "Starbucks": 0.33
+    }
+  },
+  "Fun": {
+    "total": 1.32,
+    "categories": {
+      "Entertainment": 1.17,
+      "Recreation": 0.12,
+      "Bars & Nightlife": 0.04
+    }
+  },
+  "Insurance": {
+    "total": 1.49,
+    "categories": {}
+  },
+  "Subscriptions": {
+    "total": 0.9,
+    "categories": {}
+  },
+  "Other": {
+    "total": 4.07,
+    "categories": {}
+  },
+  "Household": {
+    "total": 5.38,
+    "categories": {
+      "Utilities": 0.97,
+      "House": 3.04,
+      "Rent": 1.37
+    }
+  },
+  "Gyms and Fitness Centers": {
+    "total": 0.9,
+    "categories": {}
+  },
+  "Personal Care": {
+    "total": 0.23,
+    "categories": {}
+  },
+  "Travel & Vacation": {
+    "total": 1.27,
+    "categories": {}
+  },
+  "Pets": {
+    "total": 0.44,
+    "categories": {}
+  },
+  "Healthcare": {
+    "total": 0.19,
+    "categories": {}
+  },
+  "Mortgage": {
+    "total": 26.57,
+    "categories": {}
+  },
+  "Property Taxes": {
+    "total": 8.45,
+    "categories": {}
+  }
+}

@@ -1,0 +1,23 @@
+import MdxLayout from '../components/mdx-layout'
+
+export const date = "YYYY-MM-DD" // Replace with actual date in format YYYY-MM-DD
+
+# Blog Post Title Here
+
+<div className="flex flex-col gap-2 my-6 self-start">
+  <div className="text-blue-400 text-lg font-medium">Optional Subtitle Here</div>
+  <div className="border-l-4 border-blue-500 pl-4 italic text-gray-400">Optional description here</div>
+</div>
+
+## Introduction
+Your introduction text here...
+
+## Main Content
+Your main content here...
+
+## Conclusion
+Your conclusion here...
+
+export default function BlogPostContent({ children }) {
+  return <MdxLayout date={date}>{children}</MdxLayout>
+}

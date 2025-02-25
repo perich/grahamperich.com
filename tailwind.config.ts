@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -13,9 +14,30 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: "100%",
+          },
+        },
+      },
     },
   },
-  // https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#installation
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [
+    // https://github.com/tailwindlabs/tailwindcss-typography?tab=readme-ov-file#installation
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require("@tailwindcss/typography"),
+    plugin(function ({ addUtilities }) {
+      const newUtilities = {
+        ".text-gradient-gold": {
+          background: "linear-gradient(to right, #f59e0b, #d97706, #f59e0b)",
+          "-webkit-background-clip": "text",
+          "background-clip": "text",
+          color: "transparent",
+          display: "inline-block",
+        },
+      };
+      addUtilities(newUtilities);
+    }),
+  ],
 } satisfies Config;
