@@ -12,7 +12,6 @@ export default function HelloWorld() {
         // It does not determine the rendered size of the image, which is controlled by CSS, similar to the width attribute in the HTML <img> tag.
         width={150}
         height={150}
-        placeholder="blur"
         priority
       />
       <h1 className="text-4xl sm:text-5xl font-bold">Graham Perich</h1>
