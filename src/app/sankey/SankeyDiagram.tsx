@@ -17,7 +17,7 @@ import { SankeyController, Flow } from "chartjs-chart-sankey";
 
 import { Chart } from "react-chartjs-2";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Usage example:
 // const randomColor = generateBrightColor(); // Returns something like "#FF4E2A"
@@ -90,20 +90,7 @@ type ExpensesData = {
   };
 };
 
-type SankeyDataType = {
-  datasets: {
-    label: string;
-    data: {
-      from: string;
-      to: string;
-      flow: number;
-    }[];
-  }[];
-};
-function formatExpensesData(
-  expensesData: ExpensesData,
-  netIncome: number
-): SankeyDataType {
+function formatExpensesData(expensesData: ExpensesData, netIncome: number) {
   const data: Array<{ from: string; to: string; flow: number }> = [];
   let expenseTotal = 0;
 
@@ -152,8 +139,10 @@ function formatExpensesData(
       {
         label: "2024 Finance Wrapped (% of Net Income)",
         data: finalData,
-        colorFrom: (c) => nodeColors[c.dataset.data[c.dataIndex].from],
-        colorTo: (c) => nodeColors[c.dataset.data[c.dataIndex].to],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        colorFrom: (c: any) => nodeColors[c.dataset.data[c.dataIndex].from],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        colorTo: (c: any) => nodeColors[c.dataset.data[c.dataIndex].to],
         color: "white",
         alpha: 0.75,
         size: "max",
@@ -168,10 +157,7 @@ function formatExpensesData(
   };
 }
 
-const sankeyData: SankeyDataType = formatExpensesData(
-  expenses,
-  MOCK_NET_INCOME
-);
+const sankeyData = formatExpensesData(expenses, MOCK_NET_INCOME);
 
 const options = {
   responsive: true,
@@ -207,11 +193,12 @@ const options = {
       padding: 12,
       boxPadding: 6,
       callbacks: {
-        label: function(context) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        label: function (context: any) {
           const flowValue = context.dataset.data[context.dataIndex].flow;
           return `${flowValue.toFixed(2)}% of Net Income`;
-        }
-      }
+        },
+      },
     },
     legend: {
       labels: {
@@ -235,6 +222,15 @@ const options = {
 const SankeyDiagram = () => {
   const [height, setHeight] = useState(1000);
   const [width, setWidth] = useState(1000);
+  const [maxWidth, setMaxWidth] = useState(3000);
+  
+  // Set the max width based on window size after component mounts
+  // This avoids the "window is not defined" error during SSR
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setMaxWidth(window.innerWidth);
+    }
+  }, []);
 
   return (
     <div className="my-4">
@@ -270,7 +266,7 @@ const SankeyDiagram = () => {
               type="range"
               id="width"
               min="800"
-              max={window.innerWidth}
+              max={maxWidth}
               value={width}
               onChange={(e) => setWidth(Number(e.target.value))}
               className="w-full accent-blue-500 bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer"
@@ -293,6 +289,7 @@ const SankeyDiagram = () => {
             margin: "0 auto",
           }}
         >
+          {/* @ts-expect-error - ChartJS types are not updated for Sankey */}
           <Chart type="sankey" data={sankeyData} options={options} />
         </div>
       </div>
