@@ -223,18 +223,33 @@ const SankeyDiagram = () => {
   const [height, setHeight] = useState(1000);
   const [width, setWidth] = useState(1000);
   const [maxWidth, setMaxWidth] = useState(3000);
-  
-  // Set the max width based on window size after component mounts
+
+  // Set the max width and initialize width based on window size after component mounts
   // This avoids the "window is not defined" error during SSR
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setMaxWidth(window.innerWidth);
+    if (typeof window !== "undefined") {
+      const viewportWidth = window.innerWidth;
+      setMaxWidth(viewportWidth);
+
+      // Set initial chart width based on viewport
+      if (viewportWidth < 768) {
+        // For mobile devices, start with a more appropriate width
+        setWidth(Math.max(viewportWidth - 40, 300));
+      }
+
+      // Add resize event listener
+      const handleResize = () => {
+        setMaxWidth(window.innerWidth);
+      };
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }
   }, []);
 
   return (
     <div className="my-4">
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 mb-6">
+      <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700 mb-6 overflow-x-auto">
         <div className="font-semibold text-gray-200 mb-6">Diagram Controls</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-3">
@@ -247,7 +262,7 @@ const SankeyDiagram = () => {
             <input
               type="range"
               id="height"
-              min="800"
+              min="400"
               max="3000"
               value={height}
               onChange={(e) => setHeight(Number(e.target.value))}
@@ -265,7 +280,7 @@ const SankeyDiagram = () => {
             <input
               type="range"
               id="width"
-              min="800"
+              min="300"
               max={maxWidth}
               value={width}
               onChange={(e) => setWidth(Number(e.target.value))}
@@ -276,16 +291,16 @@ const SankeyDiagram = () => {
       </div>
 
       <div
-        className="overflow-auto bg-gray-800 rounded-lg shadow-xl border border-gray-700"
-        style={{ width: "100%" }}
+        className="overflow-x-auto bg-gray-800 rounded-lg shadow-xl border border-gray-700"
+        style={{ width: "100%", maxWidth: "100vw" }}
       >
         <div
-          className="chart-container p-4"
+          className="chart-container p-2 sm:p-4"
           style={{
             position: "relative",
             height: `${height}px`,
             width: `${width}px`,
-            minWidth: "800px",
+            minWidth: `${Math.min(300, width)}px`,
             margin: "0 auto",
           }}
         >

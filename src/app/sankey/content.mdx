@@ -21,7 +21,7 @@ The rest of this post will walk you through step-by-step how I approached this p
 
 ## Implementation Journey
 
-<div className="bg-gray-800 border-l-4 border-blue-500 p-4 rounded my-6">
+<div className="bg-gray-800 border-l-4 border-blue-500 p-4 rounded my-6 overflow-x-auto">
   <h3 className="text-blue-400 font-semibold text-lg mb-2">📝 Project Requirements</h3>
 
 Here are the requirements I settled on for the "2024 Wrapped" Sankey Diagram:
@@ -30,7 +30,7 @@ Here are the requirements I settled on for the "2024 Wrapped" Sankey Diagram:
 - By default all categories should be displayed, but users should be able to show/hide any of them as well. This is useful because some categories are really large e.g. Mortgage payment, Federal Taxes, and this makes viewing information about smaller categories harder since everything is scaled relatively.
 </div>
 
-<div className="bg-gray-800 border-l-4 border-green-500 p-4 rounded my-6">
+<div className="bg-gray-800 border-l-4 border-green-500 p-4 rounded my-6 overflow-x-auto">
   <h3 className="text-green-400 font-semibold text-lg mb-2">🔍 Technology Selection</h3>
 
 First things first, I need to get the lay of the land in the JavaScript charting ecosystem. This site is built with React and I've been using React professionally for years, so I'll prefer libraries with good React wrappers. I played around with several, including D3, react-google-charts, and finally settled on ChartJS.
@@ -42,13 +42,14 @@ I started evaluating D3 with the `d3-sankey-plugin` next, but abandoned it in fa
 2. Out of the box functionality—chartJS has pretty impressive defaults. You get animations and viewport size responsiveness for free, for example. 
 </div>
 
-<div className="bg-gray-800 border-l-4 border-purple-500 p-4 rounded my-6">
+<div className="bg-gray-800 border-l-4 border-purple-500 p-4 rounded my-6 overflow-x-auto max-w-full">
   <h3 className="text-purple-400 font-semibold text-lg mb-2">🏗️ Data Structure Design</h3>
 
 Next I need to convert the `.csv` export to JSON. First, let's define a TypeScript type for the ideal JSON object. Then we can use that plus some LLM prompting to generate a script. We could write it by hand of course, but it's a pretty trivial script and time is of the essence. I can hear my toddler in the hallway outside of my home office; my wife can only keep him at bay for so long!
 
 I want the output to look something like this:
 
+<div className="overflow-x-auto">
 <CodeBlock language="json" code={`{
 "Shopping": {
     "total": 33569.33,
@@ -72,9 +73,11 @@ I want the output to look something like this:
     "categories": {}
   }
 }`} />
+</div>
 
 So I'll define these types...
 
+<div className="overflow-x-auto">
 <CodeBlock language="tsx" code={`
     interface CategoryDetail {
         [category: string]: number;
@@ -90,9 +93,11 @@ So I'll define these types...
     }
 `
 } />
+</div>
 
 ...and this function signature
 
+<div className="overflow-x-auto">
 <CodeBlock language="tsx" code={`
     async function processExpenses({
         csvFilePath,
@@ -102,12 +107,13 @@ So I'll define these types...
         // todo: implement
     }
 `} />
+</div>
 
 ..and then ask Claude 3.5 Sonnet to do the rest! After a few messages back and forth clarifying the `.csv` column names with Claude, we get a finished working product.
 I also updated the script to use the Bun JS runtime and package manager instead of NodeJS and NPM. I've been using Bun for all of my scripting work lately and it's a joy to work with—it's lightning fast and comes with an excellent standard library. 
 </div>
 
-<div className="bg-gray-800 border-l-4 border-yellow-500 p-4 rounded my-6 w-full">
+<div className="bg-gray-800 border-l-4 border-yellow-500 p-4 rounded my-6 w-full overflow-x-auto">
   <h3 className="text-yellow-400 font-semibold text-lg mb-2">🔗 Open Source Script</h3>
   <p className="mb-3">I've made the full parser script available on GitHub:</p>
   <a href="https://github.com/perich/copilot-money-csv-parser" target="_blank" rel="noopener noreferrer" className="inline-flex items-center bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium py-2 px-4 rounded-md transition-colors duration-200">
