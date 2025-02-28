@@ -1,0 +1,165 @@
+import MdxLayout from '../components/mdx-layout'
+import CodeBlock from '../components/CodeBlock'
+
+export const date = "2025-02-20"
+
+# Automating YouTube Video Downloads and Cloud Storage with Bun, yt-dlp, and Telegram
+
+<div className="flex flex-col gap-2 my-6 self-start">
+  <div className="text-blue-400 text-lg font-medium">From Local Development to VPS Deployment</div>
+  <div className="border-l-4 border-blue-500 pl-4 italic text-gray-400">A deep dive into building and deploying an automated YouTube video downloader bot</div>
+</div>
+
+## Introduction
+For a while, I've been running a YouTube video downloader bot locally to streamline my workflow. The bot listens for commands on Telegram, downloads YouTube videos via `yt-dlp`, and uploads them to DigitalOcean Spaces (an S3-compatible object storage solution). While running it on my local machine worked fine, I wanted to **automate** the process and host it on a DigitalOcean VPS (droplet) for **24/7 availability**.
+
+This post walks through how I:
+- Built the bot using **Bun**, **Telegraf**, and **yt-dlp**.
+- Leveraged Bun's **native S3 support** to upload videos to DigitalOcean Spaces.
+- Set up and deployed the bot on a **DigitalOcean VPS** using `tmux` for process management.
+
+## Project Overview
+
+<div className="bg-gray-800 border-l-4 border-blue-500 p-4 rounded my-6">
+  <h3 className="text-blue-400 font-semibold text-lg mb-2">📝 Project Requirements</h3>
+
+To achieve automation, the bot needs to:
+- Listen for YouTube links sent via Telegram.
+- Validate URLs before processing.
+- Download videos using `yt-dlp`.
+- Upload them to **DigitalOcean Spaces** via Bun's native **S3Client**.
+- Run persistently on a **VPS** without manual intervention.
+</div>
+
+## Implementing the Telegram Bot
+
+The bot is built using **Telegraf**, a lightweight framework for Telegram bots.
+
+### **Telegram Bot Setup**
+First, I created a bot using [@BotFather](https://t.me/BotFather) and obtained an API token.
+
+I then wrote the core bot logic using **Telegraf**:
+
+<CodeBlock language="tsx" code={`
+import { Telegraf } from "telegraf";
+
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN!;
+const ALLOWED_USER_ID = Number(process.env.ALLOWED_USER_ID);
+
+const bot = new Telegraf(TELEGRAM_TOKEN);
+
+bot.on("text", async (ctx) => {
+  if (ctx.from?.id !== ALLOWED_USER_ID) {
+    await ctx.reply("Unauthorized user.");
+    return;
+  }
+
+  await ctx.reply("Send a valid YouTube URL to start downloading.");
+});
+
+bot.launch();
+console.log("Bot is running...");
+`} />
+
+## Downloading YouTube Videos with `yt-dlp`
+
+The bot uses `yt-dlp` to fetch video files. Here's how I handled downloads:
+
+<CodeBlock language="tsx" code={`
+import { spawn } from "child_process";
+
+async function downloadVideo(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let stdout = "";
+    const process = spawn("yt-dlp", [url, "-o", "./downloads/%(title)s.%(ext)s", "--restrict-filename"]);
+
+    process.stdout.on("data", (data) => stdout += data.toString());
+    process.stderr.on("data", (data) => console.log("stderr:", data.toString()));
+
+    process.on("close", (code) => {
+      if (code === 0) {
+        const match = stdout.match(/\[download\] Destination: (.+)/);
+        resolve(match ? match[1].trim() : "");
+      } else {
+        reject(new Error("Download failed"));
+      }
+    });
+  });
+}
+`} />
+
+## Uploading to DigitalOcean Spaces with Bun
+
+Bun provides **native S3 support**, eliminating the need for AWS SDK dependencies. Here’s how I used `Bun.S3Client`:
+
+<CodeBlock language="tsx" code={`
+import { S3Client } from "bun";
+
+const s3Client = new S3Client({
+  endpoint: process.env.S3_ENDPOINT!,
+  bucket: process.env.S3_BUCKET!,
+  accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+});
+
+async function uploadToSpaces(filePath: string): Promise<void> {
+  const fileName = filePath.split("/").pop();
+  if (!fileName) throw new Error("Invalid file path");
+
+  const s3file = s3Client.file(\`yt-dlp/\${fileName}\`);
+  await Bun.write(s3file, Bun.file(filePath));
+}
+`} />
+
+## Deploying to DigitalOcean
+
+### **VPS Setup**
+I deployed the bot on a **DigitalOcean VPS** by:
+1. **Creating a new droplet** (Ubuntu).
+2. **Setting up SSH access**:
+   ```sh
+   ssh root@your_droplet_ip
+   ```
+3. Installing Bun & yt-dlp:
+    ```
+    curl -fsSL https://bun.sh/install | bash
+    sudo apt install -y yt-dlp ffmpeg
+    ```
+4. Copying my project from my Mac to the server:
+```
+scp -r -i ~/.ssh/id_ed25519 /path/to/project root@your_droplet_ip:/root/
+```
+
+5. Installing dependencies:
+```
+cd /root/project
+bun install
+```
+
+### Running the Bot Persistently with tmux
+I used tmux to keep the bot running even after logging out.
+
+- Start a new tmux session: `tmux new -s bot`
+- Inside tmux, start the bot: `bun run main.ts`
+- Detach from tmux: `Ctrl+B, D
+- To reattach to the bot later: `tmux attach -t bot`
+
+#### Debugging and Log Management
+- To check if tmux is running: `tmux ls`
+- To capture the entire tmux output: `tmux capture-pane -p -S - > /root/full-session.log`
+- To enable real-time logging: `tmux pipe-pane -o "/root/bot.log"`
+
+## Closing Thoughts
+This project was a great opportunity to explore:
+
+- Grok 3 for its powerful AI capabilities
+- Bun for its high-performance JavaScript runtime and native S3 support
+- yt-dlp for seamless YouTube video downloads
+- Telegraf for a lightweight Telegram bot
+- DigitalOcean Spaces as an S3-compatible storage solution
+- tmux for persistent process management
+
+
+export default function ArchiveBotBlogContent({ children }) {
+  return <MdxLayout date={date}>{children}</MdxLayout>
+}
