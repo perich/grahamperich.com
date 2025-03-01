@@ -1,46 +1,63 @@
 import MdxLayout from '../components/mdx-layout'
 import CodeBlock from '../components/CodeBlock'
+import BlogNote from '../components/BlogNote'
+import ResponsiveContainer from '../components/ResponsiveContainer'
+import BlogSection from '../components/BlogSection'
 
 export const date = "2025-02-20"
 
-# Automating YouTube Video Downloads and Cloud Storage with Bun, yt-dlp, and Telegram
+# Building a Personal Digital Archive Bot: Preserving the Ephemeral Internet
 
 <div className="flex flex-col gap-2 my-6 self-start">
-  <div className="text-blue-400 text-lg font-medium">From Local Development to VPS Deployment</div>
-  <div className="border-l-4 border-blue-500 pl-4 italic text-gray-400">A deep dive into building and deploying an automated YouTube video downloader bot</div>
+  <div className="text-blue-400 text-lg font-medium">From Ephemeral to Eternal</div>
+  <div className="border-l-4 border-blue-500 pl-4 italic text-gray-400">My journey building an automated personal archive bot to preserve digital media forever</div>
 </div>
 
-## Introduction
-For a while, I've been running a YouTube video downloader bot locally to streamline my workflow. The bot listens for commands on Telegram, downloads YouTube videos via `yt-dlp`, and uploads them to DigitalOcean Spaces (an S3-compatible object storage solution). While running it on my local machine worked fine, I wanted to **automate** the process and host it on a DigitalOcean VPS (droplet) for **24/7 availability**.
+## Why Build an Archive Bot?
 
-This post walks through how I:
-- Built the bot using **Bun**, **Telegraf**, and **yt-dlp**.
-- Leveraged Bun's **native S3 support** to upload videos to DigitalOcean Spaces.
-- Set up and deployed the bot on a **DigitalOcean VPS** using `tmux` for process management.
+The internet is incredible—it's a boundless treasure trove of information, entertainment, and culture. But it's also fleeting. I hate the feeling of attempting to revisit an old favorite video, X.com post, or website, only to discover it vanished into digital oblivion.
 
-## Project Overview
+<BlogNote type="info" title="Did You Know?">
+Two thousand years ago, the eruption of Mount Vesuvius buried an ancient library now known as the <a href="https://scrollprize.org/" target="_blank" rel="noopener noreferrer">Herculaneum Papyri</a>. These ancient scrolls miraculously survived and were decoded in 2023! Ironically, they're probably more permanent than the digital content we produce today.
 
-<div className="bg-gray-800 border-l-4 border-blue-500 p-4 rounded my-6">
-  <h3 className="text-blue-400 font-semibold text-lg mb-2">📝 Project Requirements</h3>
+This realization inspired me to build my personal archive bot: ensuring that the media I value remains accessible for me, my children, and future generations.
+</BlogNote>
 
-To achieve automation, the bot needs to:
-- Listen for YouTube links sent via Telegram.
-- Validate URLs before processing.
-- Download videos using `yt-dlp`.
-- Upload them to **DigitalOcean Spaces** via Bun's native **S3Client**.
-- Run persistently on a **VPS** without manual intervention.
-</div>
 
-## Implementing the Telegram Bot
+## How the Archive Bot Works
 
-The bot is built using **Telegraf**, a lightweight framework for Telegram bots.
+I built a straightforward TypeScript bot deployed on a DigitalOcean Droplet. Here's the simplified workflow:
 
-### **Telegram Bot Setup**
-First, I created a bot using [@BotFather](https://t.me/BotFather) and obtained an API token.
+<ResponsiveContainer>
+    <ol className="list-decimal pl-5 space-y-2">
+      <li>I send a URL to my Telegram bot.</li>
+      <li>The server downloads the media using yt-dlp for videos or a headless Chrome browser for other content.</li>
+      <li>The downloaded file is uploaded to DigitalOcean Spaces (a cloud storage solution similar to Amazon S3).</li>
+      <li>The bot sends back a confirmation message via Telegram, indicating success or highlighting any issues encountered.</li>
+      <li>The temporary files are deleted from the server, keeping everything tidy.</li>
+    </ol>
+</ResponsiveContainer>
 
-I then wrote the core bot logic using **Telegraf**:
+## Project Setup and Implementation
 
-<CodeBlock language="tsx" code={`
+<BlogSection title="📝 Project Goals" color="blue">
+  The core functionality involves:
+  <ul className="list-disc pl-5 mt-2">
+    <li>Receiving URLs through Telegram.</li>
+    <li>Validating and downloading content using yt-dlp.</li>
+    <li>Automatically uploading to DigitalOcean Spaces.</li>
+    <li>Persistent, unattended operation on a cloud VPS.</li>
+  </ul>
+</BlogSection>
+
+### Setting up the Telegram Bot
+
+I used **Telegraf**, a lightweight framework, to handle interactions via Telegram. Creating a bot through [@BotFather](https://core.telegram.org/bots/tutorial) provided the required API token.
+
+Here's a simplified snippet of my bot's logic:
+
+<ResponsiveContainer>
+  <CodeBlock language="tsx" code={`
 import { Telegraf } from "telegraf";
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN!;
@@ -54,18 +71,20 @@ bot.on("text", async (ctx) => {
     return;
   }
 
-  await ctx.reply("Send a valid YouTube URL to start downloading.");
+  await ctx.reply("Send a valid URL to archive.");
 });
 
 bot.launch();
 console.log("Bot is running...");
 `} />
+</ResponsiveContainer>
 
-## Downloading YouTube Videos with `yt-dlp`
+### Downloading Content with yt-dlp
 
-The bot uses `yt-dlp` to fetch video files. Here's how I handled downloads:
+The bot leverages **yt-dlp** to efficiently handle video downloads:
 
-<CodeBlock language="tsx" code={`
+<ResponsiveContainer>
+  <CodeBlock language="tsx" code={`
 import { spawn } from "child_process";
 
 async function downloadVideo(url: string): Promise<string> {
@@ -74,7 +93,7 @@ async function downloadVideo(url: string): Promise<string> {
     const process = spawn("yt-dlp", [url, "-o", "./downloads/%(title)s.%(ext)s", "--restrict-filename"]);
 
     process.stdout.on("data", (data) => stdout += data.toString());
-    process.stderr.on("data", (data) => console.log("stderr:", data.toString()));
+    process.stderr.on("data", (data) => console.error("stderr:", data.toString()));
 
     process.on("close", (code) => {
       if (code === 0) {
@@ -87,12 +106,14 @@ async function downloadVideo(url: string): Promise<string> {
   });
 }
 `} />
+</ResponsiveContainer>
 
-## Uploading to DigitalOcean Spaces with Bun
+### Uploading with Bun's Native S3 Support
 
-Bun provides **native S3 support**, eliminating the need for AWS SDK dependencies. Here’s how I used `Bun.S3Client`:
+Using Bun's native S3 client streamlined uploads to DigitalOcean Spaces:
 
-<CodeBlock language="tsx" code={`
+<ResponsiveContainer>
+  <CodeBlock language="tsx" code={`
 import { S3Client } from "bun";
 
 const s3Client = new S3Client({
@@ -106,60 +127,63 @@ async function uploadToSpaces(filePath: string): Promise<void> {
   const fileName = filePath.split("/").pop();
   if (!fileName) throw new Error("Invalid file path");
 
-  const s3file = s3Client.file(\`yt-dlp/\${fileName}\`);
+  const s3file = s3Client.file(\`archive/\${fileName}\`);
   await Bun.write(s3file, Bun.file(filePath));
 }
 `} />
+</ResponsiveContainer>
 
-## Deploying to DigitalOcean
+### Deploying the Bot to DigitalOcean
 
-### **VPS Setup**
-I deployed the bot on a **DigitalOcean VPS** by:
-1. **Creating a new droplet** (Ubuntu).
-2. **Setting up SSH access**:
-   ```sh
-   ssh root@your_droplet_ip
-   ```
-3. Installing Bun & yt-dlp:
-    ```
-    curl -fsSL https://bun.sh/install | bash
-    sudo apt install -y yt-dlp ffmpeg
-    ```
-4. Copying my project from my Mac to the server:
-```
-scp -r -i ~/.ssh/id_ed25519 /path/to/project root@your_droplet_ip:/root/
-```
+<BlogSection title="🚀 Deployment Steps" color="green">
+  <p>Deployment involved setting up a DigitalOcean droplet, installing dependencies (Bun, yt-dlp, ffmpeg), and securely transferring files from my local machine.</p>
+  
+  <p className="mt-4">To keep the bot running continuously, I used <strong>tmux</strong>:</p>
+  
+  <div className="bg-gray-900 p-3 rounded mt-2 font-mono text-sm">
+    <div># Start tmux session</div>
+    <div>tmux new -s archive_bot</div>
+    <div className="mt-2"># Run bot inside tmux</div>
+    <div>bun run main.ts</div>
+    <div className="mt-2"># Detach from session (bot continues running)</div>
+    <div>Ctrl+B, D</div>
+    <div className="mt-2"># Reattach later</div>
+    <div>tmux attach -t archive_bot</div>
+  </div>
+</BlogSection>
 
-5. Installing dependencies:
-```
-cd /root/project
-bun install
-```
+### Monitoring and Debugging
 
-### Running the Bot Persistently with tmux
-I used tmux to keep the bot running even after logging out.
+<ResponsiveContainer>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="bg-gray-800 p-4 rounded border border-gray-700">
+      <div className="font-medium text-blue-400 mb-2">Check Sessions</div>
+      <code className="text-yellow-300">tmux ls</code>
+    </div>
+    
+    <div className="bg-gray-800 p-4 rounded border border-gray-700">
+      <div className="font-medium text-blue-400 mb-2">Capture Logs</div>
+      <code className="text-yellow-300">tmux capture-pane -p -S - > session.log</code>
+    </div>
+    
+    <div className="bg-gray-800 p-4 rounded border border-gray-700">
+      <div className="font-medium text-blue-400 mb-2">Real-time Logging</div>
+      <code className="text-yellow-300">tmux pipe-pane -o "cat >> bot.log"</code>
+    </div>
+  </div>
+</ResponsiveContainer>
 
-- Start a new tmux session: `tmux new -s bot`
-- Inside tmux, start the bot: `bun run main.ts`
-- Detach from tmux: `Ctrl+B, D
-- To reattach to the bot later: `tmux attach -t bot`
+## Final Thoughts
 
-#### Debugging and Log Management
-- To check if tmux is running: `tmux ls`
-- To capture the entire tmux output: `tmux capture-pane -p -S - > /root/full-session.log`
-- To enable real-time logging: `tmux pipe-pane -o "/root/bot.log"`
+<BlogNote type="tip" title="Digital Preservation">
+Building this archive bot not only solved my practical need to preserve digital content but also deepened my understanding of modern web automation tools like Bun and yt-dlp. In an era where digital content disappears without warning, it feels reassuring to build a small piece of digital permanence, just as the Herculaneum scrolls preserved history for future generations.
+</BlogNote>
 
-## Closing Thoughts
-This project was a great opportunity to explore:
-
-- Grok 3 for its powerful AI capabilities
-- Bun for its high-performance JavaScript runtime and native S3 support
-- yt-dlp for seamless YouTube video downloads
-- Telegraf for a lightweight Telegram bot
-- DigitalOcean Spaces as an S3-compatible storage solution
-- tmux for persistent process management
-
+<BlogNote type="link" title="Code" link={{ url: "https://github.com/perich/personal-archive-bot", text: "View on GitHub" }}>
+  I've made the full source code for this archive bot available on GitHub:
+</BlogNote>
 
 export default function ArchiveBotBlogContent({ children }) {
   return <MdxLayout date={date}>{children}</MdxLayout>
 }
+
