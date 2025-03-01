@@ -6,7 +6,7 @@ import BlogSection from '../components/BlogSection'
 
 export const date = "2025-02-20"
 
-# Building a Personal Digital Archive Bot: Preserving the Ephemeral Internet
+# Building a Personal Digital Archive Bot
 
 <div className="flex flex-col gap-2 my-6 self-start">
   <div className="text-blue-400 text-lg font-medium">From Ephemeral to Eternal</div>
@@ -31,22 +31,24 @@ I built a straightforward TypeScript bot deployed on a DigitalOcean Droplet. Her
 - I send a URL to my Telegram bot.
 - The server downloads the media using yt-dlp for videos or a headless Chrome browser for other content.
 - The downloaded file is uploaded to DigitalOcean Spaces (a cloud storage solution similar to Amazon S3).
-- The bot sends back a confirmation message via Telegram, indicating success or highlighting any issues encountered.
-- The temporary files are deleted from the server, keeping everything tidy.
+- The bot sends back a confirmation message via Telegram, indicating success or reporting any issues encountered (so I can go ssh into the server and fix it).
+- The temporary files are deleted from the server after being uploaded, keeping everything tidy.
 
 ### Project Setup and Implementation
 
-  The core functionality involves:
-  - Receiving URLs through Telegram.  
-  - Validating and downloading content using yt-dlp.
-  - Automatically uploading to DigitalOcean Spaces.
-  - Persistent, unattended operation on a cloud VPS.
+The core functionality involves:
+- Receiving URLs through Telegram.  
+- Validating and downloading content using yt-dlp.
+- Automatically uploading to DigitalOcean Spaces.
+- Persistent, unattended operation on a cloud VPS.
 
 #### Setting up the Telegram Bot
 
+First of all: why Telegram? Well, I want to be able to communicate with my bot from any of my devices. Telegram has a great mobile app and a great web app. And it's free! I've built some Telegram bots in the past, so I'm already familiar with how they work. Using Telegram as the "frontend" to my bot allows me to send a simple text message with a URL from any device, even when I'm on the go. Then, the bot will take care of automatically archiving the media and texting me back with status updates.
+
 I used **Telegraf**, a lightweight framework, to handle interactions via Telegram. Creating a bot through [@BotFather](https://core.telegram.org/bots/tutorial) provided the required API token.
 
-Here's a simplified snippet of my bot's logic:
+Here's a simplified snippet of the bot's logic:
 
 <ResponsiveContainer>
   <CodeBlock language="tsx" code={`
@@ -63,7 +65,8 @@ bot.on("text", async (ctx) => {
     return;
   }
 
-  await ctx.reply("Send a valid URL to archive.");
+  // do some stuff
+  await ctx.reply("Stuff was done!");
 });
 
 bot.launch();
@@ -73,7 +76,14 @@ console.log("Bot is running...");
 
 #### Downloading Content with yt-dlp
 
-The bot leverages **yt-dlp** to efficiently handle video downloads:
+The bot leverages **yt-dlp** to handle video downloads. 
+
+<BlogNote type="warning" title="Disclaimer">
+  Make sure to follow all applicable copyrightlaws in your country when downloading content.
+</BlogNote>
+
+Since yt-dlp is an executable, we need to use Bun's `spawn` function to run it. Here's a simplified example of how we can do that. One interesting note for this part is that we need to listen to
+`stdout` to figure out the name of the downloaded file. We also capture the `stderr` so that if something goes wrong, I can report the error to myself via a Telegram message.
 
 <ResponsiveContainer>
   <CodeBlock language="tsx" code={`
