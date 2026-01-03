@@ -172,14 +172,14 @@ const options = {
         family:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
       },
-      color: "#f8fafc", // slate-50
+      color: "#f0ede8", // warm white (heading)
       padding: {
         top: 20,
         bottom: 30,
       },
     },
     tooltip: {
-      backgroundColor: "rgba(30, 41, 59, 0.9)", // slate-800 with opacity
+      backgroundColor: "rgba(28, 27, 24, 0.95)", // surface with opacity
       titleFont: {
         weight: "bold",
         size: 14,
@@ -187,7 +187,7 @@ const options = {
       bodyFont: {
         size: 13,
       },
-      borderColor: "rgba(99, 102, 241, 0.5)", // indigo-500 with opacity
+      borderColor: "rgba(201, 168, 124, 0.5)", // accent with opacity
       borderWidth: 1,
       cornerRadius: 8,
       padding: 12,
@@ -202,7 +202,7 @@ const options = {
     },
     legend: {
       labels: {
-        color: "#cbd5e1", // slate-300
+        color: "#c9c4bb", // foreground
         font: {
           size: 13,
         },
@@ -248,16 +248,16 @@ const SankeyDiagram = () => {
   }, []);
 
   return (
-    <div className="my-4">
-      <div className="bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700 mb-6 overflow-x-auto">
-        <div className="font-semibold text-gray-200 mb-6">Diagram Controls</div>
+    <div className="my-8">
+      <div className="bg-surface p-5 sm:p-6 rounded-xl border border-border transition-smooth hover:border-border-hover mb-6 overflow-x-auto">
+        <div className="font-semibold text-heading mb-5">Diagram Controls</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-3">
             <label
               htmlFor="height"
-              className="text-gray-300 text-sm font-medium"
+              className="text-foreground text-sm font-medium"
             >
-              Chart Height: <span className="text-blue-400">{height}px</span>
+              Chart Height: <span className="text-accent">{height}px</span>
             </label>
             <input
               type="range"
@@ -266,16 +266,16 @@ const SankeyDiagram = () => {
               max="3000"
               value={height}
               onChange={(e) => setHeight(Number(e.target.value))}
-              className="w-full accent-blue-500 bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer"
+              className="w-full accent-accent bg-border h-2 rounded-lg appearance-none cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-3">
             <label
               htmlFor="width"
-              className="text-gray-300 text-sm font-medium"
+              className="text-foreground text-sm font-medium"
             >
-              Chart Width: <span className="text-blue-400">{width}px</span>
+              Chart Width: <span className="text-accent">{width}px</span>
             </label>
             <input
               type="range"
@@ -284,14 +284,14 @@ const SankeyDiagram = () => {
               max={maxWidth}
               value={width}
               onChange={(e) => setWidth(Number(e.target.value))}
-              className="w-full accent-blue-500 bg-gray-700 h-2 rounded-lg appearance-none cursor-pointer"
+              className="w-full accent-accent bg-border h-2 rounded-lg appearance-none cursor-pointer"
             />
           </div>
         </div>
       </div>
 
       <div
-        className="overflow-x-auto bg-gray-800 rounded-lg shadow-xl border border-gray-700"
+        className="overflow-x-auto bg-surface rounded-xl border border-border"
         style={{ width: "100%", maxWidth: "100vw" }}
       >
         <div

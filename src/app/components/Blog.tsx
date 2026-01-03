@@ -6,64 +6,85 @@ interface BlogPost {
   slug: string;
   title: string;
   date: string;
+  readingTime: number;
+}
+
+function estimateReadingTime(content: string): number {
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  return Math.max(1, Math.ceil(words / wordsPerMinute));
+}
+
+function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export default async function Blog() {
   const blogPosts = await getBlogPosts();
 
   return (
-    <section className="flex flex-col items-start gap-8 w-full max-w-4xl">
-      <h2 className="text-2xl font-bold">Blog</h2>
+    <section className="w-full max-w-2xl mx-auto">
+      {/* Section Header */}
+      <div className="opacity-0 animate-fade-in-up delay-4 mb-8">
+        <h2 className="text-2xl font-bold text-heading tracking-tight">
+          Writing
+        </h2>
+        <p className="mt-2 text-muted">
+          Thoughts on software, engineering, and building things.
+        </p>
+      </div>
+
+      {/* Blog Posts */}
       {blogPosts.length === 0 ? (
-        <p className="text-gray-300 text-center">
-          Coming soon! Check back for articles about software engineering, web
-          development, and more.
+        <p className="opacity-0 animate-fade-in-up delay-5 text-muted text-center py-12">
+          Coming soon! Check back for articles about software engineering.
         </p>
       ) : (
-        <ul className="space-y-4 w-full">
-          {blogPosts.map((post) => (
-            <li
+        <div className="space-y-3">
+          {blogPosts.map((post, index) => (
+            <article
               key={post.slug}
-              className="border border-gray-800 rounded-lg p-4 transition"
+              className="opacity-0 animate-fade-in-up group"
+              style={{ animationDelay: `${250 + index * 75}ms` }}
             >
-              <div className="flex flex-col gap-1">
-                <Link
-                  href={`/${post.slug}`}
-                  className="block font-medium text-lg  text-blue-400 hover:text-blue-300"
-                >
-                  {post.title}
-                </Link>
-                <time dateTime={post.date} className="text-sm text-gray-400">
-                  {new Date(post.date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
-              </div>
-            </li>
+              <Link
+                href={`/${post.slug}`}
+                className="block p-4 -mx-4 rounded-xl transition-smooth hover:bg-surface"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4">
+                  <h3 className="font-medium text-heading group-hover:text-accent transition-smooth">
+                    {post.title}
+                  </h3>
+                  <div className="flex items-center gap-3 text-sm text-muted shrink-0">
+                    <time dateTime={post.date}>{formatDate(post.date)}</time>
+                    <span className="hidden sm:inline text-border">·</span>
+                    <span className="hidden sm:inline">{post.readingTime} min read</span>
+                  </div>
+                </div>
+              </Link>
+            </article>
           ))}
-        </ul>
+        </div>
       )}
     </section>
   );
 }
 
 async function getBlogPosts(): Promise<BlogPost[]> {
-  // Define the app directory path
   const appDirectory = path.join(process.cwd(), "src", "app");
 
   try {
-    // Read all directories in the app folder
     const directories = await fs.readdir(appDirectory, { withFileTypes: true });
-
-    // Filter out directories that are not blog posts (exclude components, about, and any directories that don't contain content.mdx)
     const blogSlugs = [];
+
     for (const dirent of directories) {
       if (
         dirent.isDirectory() &&
-        dirent.name !== "components" &&
-        dirent.name !== "about"
+        !["components", "about", "templates"].includes(dirent.name)
       ) {
         const dirPath = path.join(appDirectory, dirent.name);
         try {
@@ -71,57 +92,46 @@ async function getBlogPosts(): Promise<BlogPost[]> {
           if (files.includes("content.mdx")) {
             blogSlugs.push(dirent.name);
           }
-        } catch (error) {
-          console.error(`Error reading directory ${dirPath}:`, error);
+        } catch {
+          // Directory not accessible
         }
       }
     }
 
-    // Get blog post details (extracting titles and dates from the mdx files)
     const blogPosts = await Promise.all(
       blogSlugs.map(async (slug) => {
         const contentPath = path.join(appDirectory, slug, "content.mdx");
         try {
           const content = await fs.readFile(contentPath, "utf8");
 
-          // Extract title from the MDX content (assuming it's a # heading)
           const titleMatch = content.match(/# (.*?)($|\n)/);
           const title = titleMatch ? titleMatch[1].trim() : slug;
 
-          // Extract date from frontmatter or metadata section
-          // Looking for patterns like: export const date = "2024-02-24"
-          // or date: "2024-02-24"
-          let date = "";
           const dateMatch = content.match(
             /export\s+const\s+date\s*=\s*["'](.+?)["']/
           );
-          if (dateMatch && dateMatch[1]) {
-            date = dateMatch[1];
-          } else {
-            // If no date is found, use the current date
-            date = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-          }
+          const date = dateMatch?.[1] || new Date().toISOString().split("T")[0];
 
-          return { slug, title, date };
-        } catch (error) {
-          console.error(`Error reading file ${contentPath}:`, error);
+          const readingTime = estimateReadingTime(content);
+
+          return { slug, title, date, readingTime };
+        } catch {
           return {
             slug,
             title: slug,
             date: new Date().toISOString().split("T")[0],
+            readingTime: 1,
           };
         }
       })
     );
 
-    // Sort blog posts by date (newest first)
     blogPosts.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
     return blogPosts;
-  } catch (error) {
-    console.error("Error getting blog posts:", error);
+  } catch {
     return [];
   }
 }

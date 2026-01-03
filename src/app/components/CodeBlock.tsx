@@ -4,15 +4,12 @@ import React, { useState } from "react";
 import { Highlight, themes } from "prism-react-renderer";
 
 const dedentString = (code: string) => {
-  // Split into lines and remove empty first/last lines from template literals
   const lines = code.split("\n");
   if (lines.length <= 1) return code;
 
-  // Remove empty first and last lines that come from template literals
   if (lines[0].trim() === "") lines.shift();
   if (lines[lines.length - 1].trim() === "") lines.pop();
 
-  // Find the minimum indentation level
   const minIndent = lines
     .filter((line) => line.trim().length > 0)
     .reduce((min, line) => {
@@ -24,7 +21,6 @@ const dedentString = (code: string) => {
       return min;
     }, Infinity);
 
-  // Remove the common indentation from all lines
   return lines.map((line) => line.slice(minIndent)).join("\n");
 };
 
@@ -39,64 +35,68 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
   };
 
   return (
-    <div className="group relative my-8 rounded-lg overflow-hidden shadow-2xl">
-      <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
-          <div className="flex items-center">
-            <span className="h-3 w-3 rounded-full bg-red-500 mr-2"></span>
-            <span className="h-3 w-3 rounded-full bg-yellow-500 mr-2"></span>
-            <span className="h-3 w-3 rounded-full bg-green-500 mr-2"></span>
-            <span className="text-xs font-mono text-gray-400 ml-2">
-              {language}
-            </span>
-          </div>
-          <button
-            onClick={copyToClipboard}
-            className="text-xs text-gray-400 hover:text-gray-200 transition-colors duration-200 focus:outline-none"
-          >
-            {copied ? (
-              <span className="text-blue-400">Copied!</span>
-            ) : (
+    <div className="group relative my-6 rounded-xl overflow-hidden bg-surface border border-border transition-smooth hover:border-border-hover">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-background/50">
+        <span className="text-xs font-mono text-muted">{language}</span>
+        <button
+          onClick={copyToClipboard}
+          className="flex items-center gap-1.5 text-xs text-muted transition-smooth hover:text-heading focus:outline-none"
+          aria-label={copied ? "Copied!" : "Copy code"}
+        >
+          {copied ? (
+            <>
+              <svg className="w-3.5 h-3.5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-accent">Copied</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
               <span>Copy</span>
-            )}
-          </button>
-        </div>
+            </>
+          )}
+        </button>
+      </div>
 
-        <div className="overflow-x-auto">
-          <Highlight
-            theme={themes.vsDark}
-            code={processedCode}
-            language={language}
-          >
-            {({ style, tokens, getLineProps, getTokenProps }) => (
-              <pre
-                className="py-4 px-5 text-sm font-mono"
-                style={{
-                  ...style,
-                  background: "transparent",
-                  margin: 0,
-                }}
-              >
-                {tokens.map((line, i) => (
-                  <div
-                    key={i}
-                    {...getLineProps({ line })}
-                    className="table-row"
-                  >
-                    <span className="table-cell text-right pr-4 select-none text-gray-500 text-xs">
-                      {i + 1}
-                    </span>
-                    <span className="table-cell">
-                      {line.map((token, key) => (
-                        <span key={key} {...getTokenProps({ token })} />
-                      ))}
-                    </span>
-                  </div>
-                ))}
-              </pre>
-            )}
-          </Highlight>
-        </div>
+      {/* Code */}
+      <div className="overflow-x-auto">
+        <Highlight
+          theme={themes.vsDark}
+          code={processedCode}
+          language={language}
+        >
+          {({ style, tokens, getLineProps, getTokenProps }) => (
+            <pre
+              className="py-4 px-4 text-sm font-mono leading-relaxed"
+              style={{
+                ...style,
+                background: "transparent",
+                margin: 0,
+              }}
+            >
+              {tokens.map((line, i) => (
+                <div
+                  key={i}
+                  {...getLineProps({ line })}
+                  className="table-row"
+                >
+                  <span className="table-cell text-right pr-4 select-none text-muted/50 text-xs w-8">
+                    {i + 1}
+                  </span>
+                  <span className="table-cell">
+                    {line.map((token, key) => (
+                      <span key={key} {...getTokenProps({ token })} />
+                    ))}
+                  </span>
+                </div>
+              ))}
+            </pre>
+          )}
+        </Highlight>
       </div>
     </div>
   );

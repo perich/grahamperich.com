@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "grahamperich.com",
-  description: "The personal website of Graham Perich",
+  title: "Graham Perich",
+  description: "Software engineer building things for the web.",
 };
 
 export default function RootLayout({
@@ -26,10 +26,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} font-[family-name:var(--font-geist-sans)] bg-background text-foreground`}
       >
         <Nav />
-        <main className="pt-16">{children}</main>
+        {children}
       </body>
     </html>
   );

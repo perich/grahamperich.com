@@ -1,84 +1,76 @@
-// https://nextjs.org/docs/pages/building-your-application/configuring/mdx#using-tailwind-typography-plugin
-export default function MdxLayout({ 
+import Link from "next/link";
+import Footer from "./Footer";
+
+function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export default function MdxLayout({
   children,
-  date
-}: { 
+  date,
+}: {
   children: React.ReactNode;
   date?: string;
 }) {
-  // Create any shared layout or styles here
   return (
-    <div
-      className="flex flex-col justify-center items-center min-h-screen px-4 sm:px-8 py-8 sm:py-12 bg-gray-900 text-gray-100 w-full"
-    >
-      <article
-        className="prose prose-invert w-full max-w-none sm:max-w-3xl lg:max-w-4xl mx-auto
-        prose-headings:font-bold prose-headings:tracking-tight prose-headings:mt-10 prose-headings:mb-6 
-        prose-h1:text-4xl sm:prose-h1:text-5xl prose-h1:text-transparent prose-h1:bg-clip-text prose-h1:bg-gradient-to-br prose-h1:from-blue-300 prose-h1:to-purple-500
-        prose-h2:text-3xl sm:prose-h2:text-4xl prose-h2:text-gray-50
-        prose-h3:text-2xl sm:prose-h3:text-3xl prose-h3:text-gray-100
-        prose-h4:text-xl sm:prose-h4:text-2xl prose-h4:text-gray-200
-        prose-h5:text-lg sm:prose-h5:text-xl prose-h5:text-gray-300
-        prose-h6:text-base sm:prose-h6:text-lg prose-h6:text-gray-400
-        prose-p:text-gray-300 prose-p:my-6 prose-p:leading-relaxed
-        prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300 hover:prose-a:underline
-        prose-strong:text-gray-100 prose-strong:font-semibold
-        prose-code:text-yellow-300 prose-code:bg-gray-800 prose-code:px-2 prose-code:py-1 prose-code:rounded
-        prose-pre:bg-gray-800 prose-pre:border prose-pre:border-gray-700 prose-pre:rounded-lg
-        prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-gray-800 prose-blockquote:p-4 prose-blockquote:rounded-r prose-blockquote:italic prose-blockquote:text-gray-300
-        prose-li:my-1 prose-li:text-gray-300
-        prose-img:rounded-lg prose-img:shadow-md"
-      >
+    <div className="flex flex-col">
+      <article className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-32 pb-16 sm:pb-24">
+        {/* Back link */}
+        <div className="mb-8 animate-fade-in">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-muted transition-smooth hover:text-heading group"
+          >
+            <svg
+              className="w-4 h-4 transition-transform group-hover:-translate-x-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to home
+          </Link>
+        </div>
+
+        {/* Date */}
         {date && (
-          <div className="mb-8 w-full">
-            <time dateTime={date} className="text-sm text-gray-400 italic">
-              {new Date(date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+          <div className="mb-8 animate-fade-in-up">
+            <time dateTime={date} className="text-sm text-muted">
+              {formatDate(date)}
             </time>
           </div>
         )}
-        {children}
+
+        {/* Content */}
+        <div
+          className="animate-fade-in-up delay-1 prose prose-invert max-w-none
+            prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-heading
+            prose-h1:text-3xl prose-h1:sm:text-4xl prose-h1:lg:text-5xl prose-h1:mb-8 prose-h1:mt-0
+            prose-h2:text-2xl prose-h2:sm:text-3xl prose-h2:mt-12 prose-h2:mb-4
+            prose-h3:text-xl prose-h3:sm:text-2xl prose-h3:mt-8 prose-h3:mb-3
+            prose-h4:text-lg prose-h4:sm:text-xl prose-h4:mt-6 prose-h4:mb-2
+            prose-p:text-foreground prose-p:leading-relaxed prose-p:my-5
+            prose-a:text-accent prose-a:no-underline prose-a:transition-smooth hover:prose-a:text-accent-hover hover:prose-a:underline
+            prose-strong:text-heading prose-strong:font-semibold
+            prose-code:text-accent prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+            prose-pre:bg-transparent prose-pre:p-0 prose-pre:my-6
+            prose-blockquote:border-l-2 prose-blockquote:border-accent prose-blockquote:bg-surface prose-blockquote:py-3 prose-blockquote:px-4 prose-blockquote:rounded-r prose-blockquote:not-italic prose-blockquote:text-foreground prose-blockquote:my-6
+            prose-ul:my-5 prose-ol:my-5
+            prose-li:text-foreground prose-li:my-1
+            prose-img:rounded-xl prose-img:my-8
+            prose-hr:border-border prose-hr:my-12"
+        >
+          {children}
+        </div>
       </article>
+
+      <Footer />
     </div>
   );
 }
-
-// Example Usage:
-
-// import MdxLayout from '../components/mdx-layout'
-
-// # Welcome to my MDX page!
-
-// export default function MDXPage({ children }) {
-//   return <MdxLayout>{children}</MdxLayout>
-// }
-
-// The "magic" happens in several steps:
-
-// 1. Compilation: The MDX compiler converts your markdown content into JSX elements:
-//    # Welcome becomes -> <h1>Welcome</h1>
-//    Code blocks become ->  <pre> and <code> elements
-//    Paragraphs become -> <p> elements
-//    etc.
-
-// ** 🚨🚨 THE IMPORTANT PART FOR UNDERSTANDING HOW .MDX FILES WORK🚨🚨  ***
-// 2. Component Injection: All these converted elements become the children prop in your default export function. So internally, it looks something like this:
-//      Pseudo-code of what Next.js/MDX generates
-//          export default function MDXPage() {
-//              const mdxContent = (
-//              <>
-//                  <h1>Welcome to my MDX page!</h1>
-//                  {/* Any other MDX content */}
-//              </>
-//              );
-//              return <MdxLayout>{mdxContent}</MdxLayout>;
-//          }
-
-// 3. Layout Application: Your MdxLayout component then wraps this content with Tailwind's typography styles:
-//      - The prose class from @tailwindcss/typography applies sensible typography defaults
-//      - Your additional classes (prose-headings:mt-8, etc.) customize these defaults
-
-// 4. Final Render: Next.js treats this like any other React component in your app
