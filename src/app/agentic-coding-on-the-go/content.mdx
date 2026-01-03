@@ -8,67 +8,19 @@ export const date = "2026-01-02"
 
 # Agentic Coding On-the-Go
 
-<div className="flex flex-col gap-2 my-6 self-start">
-  <div className="text-blue-400 text-lg font-medium">Code Anywhere, Anytime</div>
-  <div className="border-l-4 border-blue-500 pl-4 italic text-gray-400">How I use tmux, Tailscale, and Termius to maintain persistent Claude Code sessions across devices and locations</div>
-</div>
+The Claude iOS app gives you the ability to use Claude Code on the go. It works fine, but it doesn't run on _my_ computer which makes it significantly less useful. I want to start working at my desk, leave the house, and pick up the exact same conversation from my phone while waiting in line somewhere. Turns out this is very doable with three tools: tmux, Tailscale, and Termius.
 
-### The Problem
+The setup takes ~30 minutes. When you're done, you'll be able to seamlessly transition from coding at home to coding on-the-go via remote connection to your primary Mac workstation.
 
-You're working on something with Claude Code at your desk. You've got a great flow going, the AI is understanding your codebase, and you're making real progress. Then life happens—you need to leave the house, run an errand, or catch a flight. Your coding session ends, and when you return later, you have to start fresh, re-explaining context and losing that momentum.
+### 1. tmux (Persistent Terminal Sessions)
 
-What if you could just... pick up exactly where you left off, from anywhere?
-
-<BlogNote type="info" title="The Magic">
-With tmux, Tailscale, and Termius, you can start a Claude Code session at home, detach, leave your house, and seamlessly reattach from your iPhone or MacBook while you're out. Your AI coding assistant remembers everything, the conversation continues, and your workflow never breaks.
-</BlogNote>
-
-### Why This Setup is Game-Changing
-
-Before we dive into the how, let me explain why this is so incredibly useful:
-
-1. **Persistent AI Context**: Claude Code maintains its full conversation history and understanding of your codebase. No re-explaining, no lost context.
-
-2. **True Mobility**: Start work at your desk, continue from a coffee shop, finish from a hotel room—all with the same session.
-
-3. **Zero Interruption**: Your code execution, file watchers, development servers—everything keeps running even when you disconnect.
-
-4. **Multi-Device Flexibility**: Access from your MacBook, iPad, or even your iPhone when you just need to check on progress.
-
-5. **Network Independence**: Tailscale creates a secure mesh network, so you're always connected to your home machine as if you were on the same LAN.
-
-### The Three Components
-
-<ResponsiveContainer>
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-blue-400 mb-2">tmux</div>
-      <div className="text-gray-400 text-sm">Terminal multiplexer that keeps sessions alive when you disconnect</div>
-    </div>
-
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-blue-400 mb-2">Tailscale</div>
-      <div className="text-gray-400 text-sm">Zero-config VPN that creates a secure mesh network between your devices</div>
-    </div>
-
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-blue-400 mb-2">Termius</div>
-      <div className="text-gray-400 text-sm">Beautiful SSH client for macOS and iOS with seamless syncing</div>
-    </div>
-  </div>
-</ResponsiveContainer>
-
-### Step 1: Setting Up tmux
-
-tmux is a terminal multiplexer that lets you create persistent sessions. Even when you disconnect, the session keeps running in the background.
-
-#### Install tmux
+tmux is a terminal multiplexer—it keeps your shell sessions alive even when you disconnect. This is the foundation of the whole setup.
 
 <ResponsiveContainer>
   <CodeBlock language="bash" code={`brew install tmux`} />
 </ResponsiveContainer>
 
-#### Basic tmux Commands
+The core commands you need:
 
 <ResponsiveContainer>
   <CodeBlock language="bash" code={`# Create a new named session
@@ -90,27 +42,19 @@ tmux attach -t coding
 tmux kill-session -t coding`} />
 </ResponsiveContainer>
 
-<BlogNote type="tip" title="Pro Tip">
-I like to create descriptive session names for different projects: `tmux new -s website-redesign` or `tmux new -s api-refactor`. This makes it easy to manage multiple ongoing projects.
-</BlogNote>
+I use descriptive session names for different projects: `tmux new -s website-redesign` or `tmux new -s api-refactor`. Simple but effective.
 
-#### Make tmux Survive Reboots
+#### Making tmux Survive Reboots
 
-Here's the killer feature: with the right plugins, your tmux sessions can survive reboots! This means even if your Mac restarts, your sessions are automatically restored.
+With the right plugins, tmux sessions persist across Mac restarts. This is very nice so that you don't have to stress about restarts, crashes, laptop running out of battery, etc.. when you open tmux again, everything will be restored.
 
-We'll use **TPM** (tmux plugin manager) along with two essential plugins:
-- **tmux-resurrect**: Saves and restores tmux sessions
-- **tmux-continuum**: Automatic continuous saving and restoring
-
-#### Install TPM (tmux plugin manager)
+Install TPM (tmux plugin manager):
 
 <ResponsiveContainer>
   <CodeBlock language="bash" code={`git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`} />
 </ResponsiveContainer>
 
-#### Configure ~/.tmux.conf
-
-Create or edit `~/.tmux.conf` with this configuration:
+Create `~/.tmux.conf`:
 
 <ResponsiveContainer>
   <CodeBlock language="bash" code={`# List of TPM plugins
@@ -129,250 +73,77 @@ run '~/.tmux/plugins/tpm/tpm'
 set -g mouse on`} />
 </ResponsiveContainer>
 
-#### Install the Plugins
+Then start tmux and press `Ctrl+B, Shift+I` to install plugins. Sessions now auto-save every 5 minutes and auto-restore on reboot.
 
-<ResponsiveContainer>
-  <CodeBlock language="bash" code={`# Start tmux
-tmux
+### 2. Tailscale (Access Your Mac From Anywhere)
 
-# Inside tmux, press: Ctrl+B, then Shift+I (capital I)
-# This will install all plugins listed in your config
+Tailscale creates a mesh VPN between your devices. Once set up, your iPhone can SSH into your home Mac from anywhere—coffee shop, airport, hotel—as if you were on the same LAN. No port forwarding, no dynamic DNS nonsense.
 
-# You should see a message: "TMUX environment reloaded"
-# Your plugins are now installed!`} />
-</ResponsiveContainer>
+Setup:
+1. Download from <a href="https://tailscale.com/download" target="_blank" rel="noopener noreferrer">tailscale.com/download</a>
+2. Sign in (Google, GitHub, etc.)
+3. Your Mac gets a Tailscale IP (100.x.x.x range)
 
-<BlogNote type="info" title="What This Does">
-With this setup, tmux will automatically save your sessions every 5 minutes. If your Mac reboots, restarts, or crashes, when you start tmux again, all your sessions—including your Claude Code conversations—will be automatically restored. It's magical!
-</BlogNote>
-
-### Step 2: Setting Up Tailscale
-
-Tailscale creates a secure mesh VPN between all your devices. Once set up, you can SSH into your home machine from anywhere as if you were on the same local network.
-
-#### Install Tailscale on Your Mac
-
-1. Visit <a href="https://tailscale.com/download" target="_blank" rel="noopener noreferrer">tailscale.com/download</a>
-2. Download and install the macOS app
-3. Sign in with your preferred account (Google, GitHub, etc.)
-4. Your Mac will get a Tailscale IP address (usually in the 100.x.x.x range)
-
-#### Enable SSH on Your Mac
-
+Enable SSH on your Mac:
 1. Open **System Settings**
 2. Go to **General** → **Sharing**
 3. Turn on **Remote Login**
 
-That's it—your Mac is now accepting SSH connections.
-
-#### Note Your Tailscale IP
+Find your Tailscale IP:
 
 <ResponsiveContainer>
-  <CodeBlock language="bash" code={`# Find your Tailscale IP
-tailscale ip -4
-
+  <CodeBlock language="bash" code={`tailscale ip -4
 # Example output: 100.101.102.103`} />
 </ResponsiveContainer>
 
-<BlogNote type="info" title="Magic DNS">
-Tailscale also provides Magic DNS, so you can use your machine's hostname instead of the IP. For example, if your Mac is named "graham-macbook", you can SSH to `graham-macbook` instead of the IP address!
-</BlogNote>
+Tailscale also provides Magic DNS—you can SSH to `your-mac-hostname` instead of the IP. 
 
-#### Install Tailscale on Other Devices
+After you've installed Tailscale on your Mac and setup an account, go install Tailscale on your <a href="https://apps.apple.com/us/app/tailscale/id1470499037" target="_blank" rel="noopener noreferrer">iPhone and iPad</a> too and sign in. All devices on the same account see each other, as long as they're connected to Tailscale.
 
-Install Tailscale on any device you want to connect from:
-- Your MacBook
-- Your iPhone
-- Your iPad
+One thing to note: your Mac needs to stay awake for this to work. I use <a href="https://apps.apple.com/us/app/sleep-control-centre/id946798523?mt=12" target="_blank" rel="noopener noreferrer">Sleep Control Centre</a> to prevent it from sleeping when I'm away.
 
-All devices signed into your Tailscale account will be able to see each other on the mesh network.
+### 3. Termius (SSH From Your Phone)
 
-### Step 3: Setting Up Termius
+Termius is a great SSH client for iOS.
 
-Termius is a beautiful, modern SSH client that works on macOS and iOS. It syncs your connections across devices.
+- **iPhone/iPad**: <a href="https://apps.apple.com/us/app/termius-modern-ssh-client/id549039908" target="_blank" rel="noopener noreferrer">App Store</a>
 
-#### Install Termius
+Create a new host with your Tailscale IP (or Magic DNS name), your Mac username, and SSH key auth. Use SSH keys, not passwords—generate with `ssh-keygen`, copy with `ssh-copy-id`. If you don't know how to do this, send this entire blog post to an AI chatbot and ask them to walk you through it ;)
 
-- **Mac**: Download from <a href="https://termius.com/" target="_blank" rel="noopener noreferrer">termius.com</a>
-- **iPhone/iPad**: Download from the <a href="https://apps.apple.com/us/app/termius-modern-ssh-client/id549039908" target="_blank" rel="noopener noreferrer">App Store</a>
+### The Workflow
 
-#### Create an SSH Connection
-
-1. Open Termius
-2. Click "New Host"
-3. Enter details:
-   - **Label**: Home Mac (or whatever you prefer)
-   - **Address**: Your Tailscale IP (e.g., `100.101.102.103`) or Magic DNS name
-   - **Username**: Your Mac username
-   - **Authentication**: Password or SSH key
-
-<BlogNote type="warning" title="Security Tip">
-I highly recommend using SSH keys instead of passwords. Generate a key with `ssh-keygen` and add it to your Mac with `ssh-copy-id`. Termius makes it easy to import and manage SSH keys.
-</BlogNote>
-
-#### Sync Across Devices
-
-Termius has a premium tier that syncs your hosts, keys, and snippets across all devices. This is incredibly convenient—set up your connection once, access it from anywhere.
-
-### Putting It All Together: The Workflow
-
-Now for the magic. Here's my typical workflow:
-
-#### At Home (Starting the Session)
+At home:
 
 <ResponsiveContainer>
-  <CodeBlock language="bash" code={`# 1. Start a new tmux session
-tmux new -s myproject
-
-# 2. Navigate to your project
+  <CodeBlock language="bash" code={`tmux new -s myproject
 cd ~/projects/my-awesome-app
-
-# 3. Start Claude Code
 claude
 
-# 4. Start working with Claude
-# (Have a conversation, write code, run tests, etc.)
+# Work with Claude...
 
-# 5. Need to leave? Just detach!
-# Press: Ctrl+B, then D
+# Need to leave? Detach:
+# Ctrl+B, then D
 
-# Your session is now running in the background.
-# Close your terminal. Turn off your monitor. Leave the house!`} />
+# Close terminal. Leave house.`} />
 </ResponsiveContainer>
 
-#### On-the-Go (Reconnecting)
-
-Pull out your iPhone, iPad, or MacBook:
+On-the-go (from iPhone):
 
 <ResponsiveContainer>
-  <CodeBlock language="bash" code={`# 1. Open Termius
-# 2. Tap/click your "Home Mac" connection
-# 3. You're in! Now reattach to tmux:
+  <CodeBlock language="bash" code={`# Open Termius → tap "Home Mac" → you're in
 
 tmux attach -t myproject
 
-# BOOM! You're back exactly where you left off.
-# Claude remembers everything. Your code is there.
-# Continue the conversation like nothing happened.`} />
+# You're back. Claude remembers everything.`} />
 </ResponsiveContainer>
 
-### Real-World Use Cases
+That's it. The session is exactly where you left it.
 
-Let me share some scenarios where this has been incredibly useful:
+### Misc Tips
 
-**The Coffee Shop Continuation**: Started refactoring a complex authentication system at home. Claude was deep into understanding the flow. Had to meet a friend at a coffee shop. Pulled out my iPad, reconnected via Termius, and continued the refactoring session while sipping a latte.
+**Multiple sessions**: Run `tmux new -s website`, `tmux new -s api`, etc. List with `tmux ls`, attach with `tmux attach -t name`.
 
-**The Airport Debugging**: Was on a flight when I remembered I needed to check on a deployment. Used my phone with Termius, reattached to my tmux session, asked Claude to review the logs, identified the issue, and pushed a fix—all from seat 22A.
-
-**The Multi-Location Sprint**: Working on a tight deadline, I started at home, continued from a coworking space, finished from a friend's house. Same Claude session the entire time. The AI had full context of all the decisions we'd made throughout the day.
-
-**The Background Build**: Started a large build process with Claude monitoring it. Detached and went for a run. Came back an hour later, reattached, and Claude had the full output ready for me to review.
-
-### Advanced Tips
-
-#### Multiple Sessions
-
-You can run multiple tmux sessions for different projects:
-
-<ResponsiveContainer>
-  <CodeBlock language="bash" code={`tmux new -s website
-tmux new -s api
-tmux new -s scripts
-
-# List all sessions
-tmux ls
-
-# Attach to specific session
-tmux attach -t api`} />
-</ResponsiveContainer>
-
-#### tmux Windows and Panes
-
-Create multiple windows within a session:
-
-<ResponsiveContainer>
-  <CodeBlock language="bash" code={`# Create new window: Ctrl+B, then C
-# Switch windows: Ctrl+B, then 0-9
-# Split pane horizontally: Ctrl+B, then "
-# Split pane vertically: Ctrl+B, then %
-# Navigate panes: Ctrl+B, then arrow keys`} />
-</ResponsiveContainer>
-
-I often run Claude Code in one window, and have another window for running tests or monitoring logs.
-
-#### Tailscale Exit Nodes
-
-Tailscale can also route your entire internet connection through another device. If you're on sketchy public WiFi, you can route through your home connection for extra security.
-
-#### SSH Config Shortcuts
-
-Create an SSH config file for even faster connections:
-
-<ResponsiveContainer>
-  <CodeBlock language="bash" code={`# ~/.ssh/config
-Host home
-    HostName 100.101.102.103
-    User graham
-    IdentityFile ~/.ssh/id_ed25519
-
-# Now you can just: ssh home`} />
-</ResponsiveContainer>
-
-### Troubleshooting
-
-<ResponsiveContainer>
-  <div className="space-y-4">
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-yellow-400 mb-2">Can't connect via Tailscale?</div>
-      <div className="text-gray-400 text-sm mb-2">Make sure both devices are:</div>
-      <ul className="text-gray-400 text-sm list-disc list-inside space-y-1">
-        <li>Signed into the same Tailscale account</li>
-        <li>Showing as "Connected" in the Tailscale app</li>
-        <li>Not blocked by firewalls (Tailscale usually handles this automatically)</li>
-      </ul>
-    </div>
-
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-yellow-400 mb-2">SSH connection refused?</div>
-      <div className="text-gray-400 text-sm">Verify SSH is enabled: <code className="text-yellow-300">sudo systemsetup -getremotelogin</code></div>
-    </div>
-
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-yellow-400 mb-2">tmux session not found?</div>
-      <div className="text-gray-400 text-sm">Check if it's still running: <code className="text-yellow-300">tmux ls</code></div>
-      <div className="text-gray-400 text-sm mt-2">Session names are case-sensitive!</div>
-    </div>
-
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-yellow-400 mb-2">Mac goes to sleep?</div>
-      <div className="text-gray-400 text-sm">I use <a href="https://apps.apple.com/us/app/sleep-control-centre/id946798523?mt=12" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Sleep Control Centre</a> to keep my Mac awake when I need persistent sessions</div>
-    </div>
-  </div>
-</ResponsiveContainer>
-
-### Why This Matters for Agentic Coding
-
-Claude Code isn't just a chatbot—it's a coding partner that understands your project, your patterns, and your goals. But that understanding builds up over a conversation. Every time you start fresh, you lose that accumulated context.
-
-With this setup:
-- **Context Preservation**: Claude remembers every decision, every file it's seen, every pattern you've discussed
-- **Long-Running Tasks**: Let Claude work on refactoring, testing, or analysis while you're away
-- **Flexibility**: Your best ideas don't always happen at your desk
-- **Continuity**: Pick up mid-thought, mid-implementation, mid-debugging
-
-The combination of persistent sessions (tmux), secure remote access (Tailscale), and excellent SSH clients (Termius) creates something magical: truly location-independent development with a persistent AI partner.
-
-### Final Thoughts
-
-This setup has genuinely transformed how I work. I no longer feel tied to my desk or anxious about interruptions. I can start something, let it simmer, come back to it from anywhere, and continue seamlessly.
-
-The initial setup takes maybe 30 minutes, but the freedom it provides is immeasurable. Whether you're a digital nomad, a busy parent who codes in stolen moments, or just someone who appreciates flexibility—this workflow is a game-changer.
-
-<BlogNote type="tip" title="Try It Today">
-Start simple: install tmux, create a session, detach, and reattach. Once you see how satisfying it is to pick up exactly where you left off, you'll be hooked. Then add Tailscale and Termius to unlock the full mobile potential.
-</BlogNote>
-
-Happy coding—from anywhere!
+**Mac sleeping?** I use <a href="https://apps.apple.com/us/app/sleep-control-centre/id946798523?mt=12" target="_blank" rel="noopener noreferrer">Sleep Control Centre</a> to keep it awake.
 
 export default function AgenticCodingContent({ children }) {
   return <MdxLayout date={date}>{children}</MdxLayout>
