@@ -33,9 +33,6 @@ export default async function Blog() {
         <h2 className="text-2xl font-bold text-heading tracking-tight">
           Writing
         </h2>
-        <p className="mt-2 text-muted">
-          Thoughts on software, engineering, and building things.
-        </p>
       </div>
 
       {/* Blog Posts */}
@@ -62,7 +59,9 @@ export default async function Blog() {
                   <div className="flex items-center gap-3 text-sm text-muted shrink-0">
                     <time dateTime={post.date}>{formatDate(post.date)}</time>
                     <span className="hidden sm:inline text-border">·</span>
-                    <span className="hidden sm:inline">{post.readingTime} min read</span>
+                    <span className="hidden sm:inline">
+                      {post.readingTime} min read
+                    </span>
                   </div>
                 </div>
               </Link>
