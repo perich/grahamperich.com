@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.grahamperich.com"),
   title: "Graham Perich",
   description: "Software engineer building things for the web.",
+  twitter: {
+    card: "summary_large_image",
+    creator: "@grahamcodes",
+  },
 };
 
 export default function RootLayout({
