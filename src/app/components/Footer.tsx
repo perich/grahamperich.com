@@ -2,14 +2,18 @@ import Link from "next/link";
 
 const footerLinks = [
   { href: "https://github.com/perich", label: "GitHub", external: true },
-  { href: "https://linkedin.com/in/gpp101010", label: "LinkedIn", external: true },
+  {
+    href: "https://linkedin.com/in/gpp101010",
+    label: "LinkedIn",
+    external: true,
+  },
   { href: "https://x.com/grahamcodes", label: "X", external: true },
 ];
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-border/50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <footer className="w-full border-t border-border">
+      <div className="max-w-3xl mx-auto px-6 sm:px-8 py-10 sm:py-14">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Copyright */}
           <p className="text-sm text-muted order-2 sm:order-1">

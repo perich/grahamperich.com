@@ -3,29 +3,29 @@
 @tailwind utilities;
 
 :root {
-  /* Color palette */
-  --background: #141311;
-  --foreground: #c9c4bb;
-  --surface: #1c1b18;
-  --surface-hover: #242320;
-  --border: #2a2825;
-  --border-hover: #3a3835;
-  --muted: #8a847a;
-  --heading: #f0ede8;
-  --accent: #c9a87c;
-  --accent-hover: #d4b68f;
+  /* Luxury Light Color Palette - Warm */
+  --background: #fbebd5;
+  --foreground: #2C2825;
+  --surface: #FFFDF9;
+  --surface-hover: #F3F0EB;
+  --border: #E8E4DD;
+  --border-hover: #D9D4CB;
+  --muted: #7A756D;
+  --heading: #1A1714;
+  --accent: #1A1714;
+  --accent-hover: #524D45;
 
   /* Spacing scale (8px base) */
-  --space-1: 0.25rem;  /* 4px */
-  --space-2: 0.5rem;   /* 8px */
-  --space-3: 0.75rem;  /* 12px */
-  --space-4: 1rem;     /* 16px */
-  --space-5: 1.5rem;   /* 24px */
-  --space-6: 2rem;     /* 32px */
-  --space-8: 3rem;     /* 48px */
-  --space-10: 4rem;    /* 64px */
-  --space-12: 5rem;    /* 80px */
-  --space-16: 8rem;    /* 128px */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-10: 4rem;
+  --space-12: 5rem;
+  --space-16: 8rem;
 
   /* Animation timing */
   --transition-fast: 150ms;
@@ -56,7 +56,7 @@ body {
 
 /* Selection color */
 ::selection {
-  background: var(--accent);
+  background: var(--heading);
   color: var(--background);
 }
 
@@ -69,7 +69,7 @@ body {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -80,7 +80,7 @@ body {
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-16px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
@@ -91,7 +91,7 @@ body {
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
@@ -147,7 +147,7 @@ body {
   transition: all var(--transition-base) var(--ease-out);
 }
 
-/* Card hover lift effect */
+/* Subtle hover lift with soft shadow */
 .hover-lift {
   transition: transform var(--transition-base) var(--ease-out),
               box-shadow var(--transition-base) var(--ease-out);
@@ -155,16 +155,7 @@ body {
 
 .hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.3);
-}
-
-/* Subtle gradient overlay for depth */
-.gradient-subtle {
-  background: linear-gradient(
-    135deg,
-    rgba(201, 168, 124, 0.03) 0%,
-    transparent 50%
-  );
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.12);
 }
 
 /* Text balance for headings */
@@ -175,4 +166,38 @@ h1, h2, h3, h4, h5, h6 {
 /* Paragraph optimal reading width */
 p {
   text-wrap: pretty;
+}
+
+/* Serif heading utility */
+.font-serif-heading {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Subtle divider */
+.divider-subtle {
+  height: 1px;
+  background: var(--border);
+}
+
+/* Refined link underline */
+.link-refined {
+  position: relative;
+  text-decoration: none;
+}
+
+.link-refined::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--transition-base) var(--ease-out);
+}
+
+.link-refined:hover::after {
+  width: 100%;
 }

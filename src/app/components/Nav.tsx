@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/#writing", label: "Writing" },
 ];
 
 export default function Nav() {
@@ -32,27 +33,27 @@ export default function Nav() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 animate-fade-in-down">
-        <div className="bg-[rgba(20,19,17,0.85)] backdrop-blur-xl border-b border-border/50">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-background/95 backdrop-blur-sm border-b border-border">
+          <div className="max-w-3xl mx-auto px-6 sm:px-8">
             <div className="flex items-center justify-between h-16">
               {/* Logo / Name */}
               <Link
                 href="/"
-                className="text-heading font-semibold tracking-tight transition-smooth hover:text-accent"
+                className="font-serif text-xl tracking-tight text-heading transition-smooth hover:text-muted"
               >
-                GP
+                Graham Perich
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center gap-1">
+              <div className="hidden md:flex items-center gap-8">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-smooth ${
+                    className={`text-sm tracking-wide transition-smooth ${
                       pathname === link.href
-                        ? "text-heading bg-surface"
-                        : "text-muted hover:text-heading hover:bg-surface/50"
+                        ? "text-heading"
+                        : "text-muted hover:text-heading"
                     }`}
                   >
                     {link.label}
@@ -63,24 +64,24 @@ export default function Nav() {
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-lg transition-smooth hover:bg-surface"
+                className="md:hidden relative w-10 h-10 flex items-center justify-center transition-smooth"
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
               >
                 <div className="w-5 h-4 flex flex-col justify-between">
                   <span
-                    className={`block h-0.5 w-full bg-current transform transition-smooth origin-center ${
-                      isOpen ? "rotate-45 translate-y-[7px]" : ""
+                    className={`block h-px w-full bg-heading transform transition-smooth origin-center ${
+                      isOpen ? "rotate-45 translate-y-[7.5px]" : ""
                     }`}
                   />
                   <span
-                    className={`block h-0.5 w-full bg-current transition-smooth ${
+                    className={`block h-px w-full bg-heading transition-smooth ${
                       isOpen ? "opacity-0 scale-0" : ""
                     }`}
                   />
                   <span
-                    className={`block h-0.5 w-full bg-current transform transition-smooth origin-center ${
-                      isOpen ? "-rotate-45 -translate-y-[7px]" : ""
+                    className={`block h-px w-full bg-heading transform transition-smooth origin-center ${
+                      isOpen ? "-rotate-45 -translate-y-[7.5px]" : ""
                     }`}
                   />
                 </div>
@@ -92,7 +93,7 @@ export default function Nav() {
 
       {/* Mobile menu overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-background/80 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-0 z-40 bg-background/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setIsOpen(false)}
@@ -101,20 +102,20 @@ export default function Nav() {
 
       {/* Mobile menu drawer */}
       <div
-        className={`fixed top-0 right-0 z-50 h-full w-72 bg-surface border-l border-border shadow-2xl transform transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed top-0 right-0 z-50 h-full w-72 bg-surface border-l border-border shadow-xl transform transition-transform duration-300 ease-out md:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex flex-col h-full pt-20 pb-6 px-4">
+        <div className="flex flex-col h-full pt-20 pb-8 px-6">
           <nav className="flex-1 space-y-1">
             {navLinks.map((link, index) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`block px-4 py-3 text-base font-medium rounded-lg transition-smooth ${
+                className={`block py-3 text-base tracking-wide transition-smooth ${
                   pathname === link.href
-                    ? "text-heading bg-background"
-                    : "text-muted hover:text-heading hover:bg-background/50"
+                    ? "text-heading"
+                    : "text-muted hover:text-heading"
                 }`}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
@@ -125,7 +126,7 @@ export default function Nav() {
 
           {/* Mobile menu footer */}
           <div className="pt-6 border-t border-border">
-            <p className="px-4 text-xs text-muted">
+            <p className="text-xs text-muted">
               &copy; {new Date().getFullYear()} Graham Perich
             </p>
           </div>

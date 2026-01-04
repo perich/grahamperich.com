@@ -7,6 +7,7 @@ interface BlogPost {
   title: string;
   date: string;
   readingTime: number;
+  excerpt: string | null;
 }
 
 function estimateReadingTime(content: string): number {
@@ -17,7 +18,7 @@ function estimateReadingTime(content: string): number {
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
+    month: "long",
     day: "numeric",
     year: "numeric",
   });
@@ -27,10 +28,10 @@ export default async function Blog() {
   const blogPosts = await getBlogPosts();
 
   return (
-    <section className="w-full max-w-2xl mx-auto">
+    <section id="writing" className="w-full max-w-2xl mx-auto scroll-mt-24">
       {/* Section Header */}
-      <div className="opacity-0 animate-fade-in-up delay-4 mb-8">
-        <h2 className="text-2xl font-bold text-heading tracking-tight">
+      <div className="opacity-0 animate-fade-in-up delay-4 mb-12">
+        <h2 className="font-serif text-3xl sm:text-4xl text-heading tracking-tight">
           Writing
         </h2>
       </div>
@@ -38,10 +39,10 @@ export default async function Blog() {
       {/* Blog Posts */}
       {blogPosts.length === 0 ? (
         <p className="opacity-0 animate-fade-in-up delay-5 text-muted text-center py-12">
-          Coming soon! Check back for articles about software engineering.
+          Coming soon.
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-0">
           {blogPosts.map((post, index) => (
             <article
               key={post.slug}
@@ -50,21 +51,22 @@ export default async function Blog() {
             >
               <Link
                 href={`/${post.slug}`}
-                className="block p-4 -mx-4 rounded-xl transition-smooth hover:bg-surface"
+                className="block py-6 transition-smooth"
               >
-                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4">
-                  <h3 className="font-medium text-heading group-hover:text-accent transition-smooth">
+                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 sm:gap-4">
+                  <h3 className="font-serif text-xl sm:text-2xl text-heading group-hover:text-muted transition-smooth">
                     {post.title}
                   </h3>
-                  <div className="flex items-center gap-3 text-sm text-muted shrink-0">
+                  <span className="text-sm text-muted shrink-0">
                     <time dateTime={post.date}>{formatDate(post.date)}</time>
-                    <span className="hidden sm:inline text-border">·</span>
-                    <span className="hidden sm:inline">
-                      {post.readingTime} min read
-                    </span>
-                  </div>
+                    <span className="mx-2">·</span>
+                    <span>{post.readingTime} min</span>
+                  </span>
                 </div>
               </Link>
+              {index < blogPosts.length - 1 && (
+                <div className="h-px bg-border" />
+              )}
             </article>
           ))}
         </div>
@@ -113,13 +115,35 @@ async function getBlogPosts(): Promise<BlogPost[]> {
 
           const readingTime = estimateReadingTime(content);
 
-          return { slug, title, date, readingTime };
+          // Extract excerpt: first paragraph after the title that isn't an export
+          const lines = content.split("\n");
+          let excerpt: string | null = null;
+          let foundTitle = false;
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith("#")) {
+              foundTitle = true;
+              continue;
+            }
+            if (!foundTitle) continue;
+            if (trimmed.startsWith("export")) continue;
+            if (trimmed.startsWith("<")) continue;
+            if (trimmed.startsWith("import")) continue;
+            if (trimmed.length > 30) {
+              excerpt =
+                trimmed.slice(0, 150) + (trimmed.length > 150 ? "..." : "");
+              break;
+            }
+          }
+
+          return { slug, title, date, readingTime, excerpt };
         } catch {
           return {
             slug,
             title: slug,
             date: new Date().toISOString().split("T")[0],
             readingTime: 1,
+            excerpt: null,
           };
         }
       })

@@ -13,20 +13,20 @@ type BlogNoteProps = {
 
 const BlogNote = ({ title, children, link }: BlogNoteProps) => {
   return (
-    <div className="not-prose my-8 p-5 rounded-xl bg-surface/50 border-l-2 border-accent">
+    <div className="not-prose my-8 p-6 rounded-lg bg-surface-hover border-l-2 border-heading">
       {title && (
-        <div className="text-heading font-medium mb-2">{title}</div>
+        <div className="text-heading font-medium mb-3">{title}</div>
       )}
       <div className="text-foreground text-[0.9375rem] leading-relaxed">
         {children}
 
         {link && (
-          <div className="mt-4">
+          <div className="mt-5">
             <a
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-accent bg-background rounded-lg transition-smooth hover:bg-surface hover:text-accent-hover"
+              className="inline-flex items-center gap-2 text-sm text-muted transition-smooth hover:text-heading"
             >
               <svg
                 className="w-4 h-4"
