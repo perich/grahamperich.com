@@ -26,6 +26,10 @@ export default {
           DEFAULT: "var(--accent)",
           hover: "var(--accent-hover)",
         },
+        link: {
+          DEFAULT: "var(--link)",
+          hover: "var(--link-hover)",
+        },
       },
       fontFamily: {
         serif: ["var(--font-cormorant)", "Georgia", "serif"],
@@ -38,10 +42,16 @@ export default {
             maxWidth: "100%",
             color: "var(--foreground)",
             a: {
-              color: "var(--accent)",
-              textDecoration: "none",
+              color: "var(--link)",
+              textDecoration: "underline",
+              textDecorationColor: "var(--link)",
+              textUnderlineOffset: "3px",
+              textDecorationThickness: "1.5px",
+              fontWeight: "500",
+              transition: "color 0.2s ease, text-decoration-color 0.2s ease",
               "&:hover": {
-                color: "var(--accent-hover)",
+                color: "var(--link-hover)",
+                textDecorationColor: "var(--link-hover)",
               },
             },
             h1: {
@@ -87,6 +97,12 @@ export default {
               border: "1px solid var(--border)",
             },
             strong: {
+              color: "var(--heading)",
+            },
+            "ul > li::marker": {
+              color: "var(--heading)",
+            },
+            "ol > li::marker": {
               color: "var(--heading)",
             },
           },

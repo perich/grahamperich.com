@@ -9,8 +9,8 @@ export const date = "2025-02-20"
 # Building a Personal Digital Archive Bot
 
 <div className="flex flex-col gap-2 my-6 self-start">
-  <div className="text-blue-400 text-lg font-medium">From Ephemeral to Eternal</div>
-  <div className="border-l-4 border-blue-500 pl-4 italic text-gray-400">My journey building an automated personal archive bot to preserve digital media forever</div>
+  <div className="text-amber-700 text-lg font-medium">From Ephemeral to Eternal</div>
+  <div className="border-l-4 border-amber-600/50 pl-4 italic text-stone-500">My journey building an automated personal archive bot to preserve digital media forever</div>
 </div>
 
 ### Why Build an Archive Bot?
@@ -161,19 +161,19 @@ tmux attach -t archive_bot
 
 <ResponsiveContainer>
   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-blue-400 mb-2">Check Sessions</div>
-      <code className="text-yellow-300">tmux ls</code>
+    <div className="bg-surface p-4 rounded-lg border border-border">
+      <div className="font-medium text-heading mb-2">Check Sessions</div>
+      <code className="text-sm bg-surface-hover px-2 py-1 rounded text-foreground">tmux ls</code>
     </div>
-    
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-blue-400 mb-2">Capture Logs</div>
-      <code className="text-yellow-300">tmux capture-pane -p -S - > session.log</code>
+
+    <div className="bg-surface p-4 rounded-lg border border-border">
+      <div className="font-medium text-heading mb-2">Capture Logs</div>
+      <code className="text-sm bg-surface-hover px-2 py-1 rounded text-foreground break-all">tmux capture-pane -p -S - > session.log</code>
     </div>
-    
-    <div className="bg-gray-800 p-4 rounded border border-gray-700">
-      <div className="font-medium text-blue-400 mb-2">Real-time Logging</div>
-      <code className="text-yellow-300">tmux pipe-pane -o "cat >> bot.log"</code>
+
+    <div className="bg-surface p-4 rounded-lg border border-border">
+      <div className="font-medium text-heading mb-2">Real-time Logging</div>
+      <code className="text-sm bg-surface-hover px-2 py-1 rounded text-foreground break-all">tmux pipe-pane -o "cat >> bot.log"</code>
     </div>
   </div>
 </ResponsiveContainer>

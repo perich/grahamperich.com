@@ -62,7 +62,7 @@ export default function MdxLayout({
             prose-h3:text-xl prose-h3:sm:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-medium
             prose-h4:text-lg prose-h4:sm:text-xl prose-h4:mt-8 prose-h4:mb-3
             prose-p:text-foreground prose-p:leading-relaxed prose-p:my-6
-            prose-a:text-heading prose-a:no-underline prose-a:border-b prose-a:border-border prose-a:transition-smooth hover:prose-a:border-heading
+            prose-a:text-link prose-a:underline prose-a:decoration-link prose-a:underline-offset-[3px] prose-a:decoration-[1.5px] prose-a:font-medium prose-a:transition-smooth hover:prose-a:text-link-hover hover:prose-a:decoration-link-hover
             prose-strong:text-heading prose-strong:font-medium
             prose-code:text-foreground prose-code:bg-surface-hover prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
             prose-pre:bg-transparent prose-pre:p-0 prose-pre:my-8

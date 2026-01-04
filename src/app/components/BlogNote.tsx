@@ -17,7 +17,7 @@ const BlogNote = ({ title, children, link }: BlogNoteProps) => {
       {title && (
         <div className="text-heading font-medium mb-3">{title}</div>
       )}
-      <div className="text-foreground text-[0.9375rem] leading-relaxed">
+      <div className="text-foreground text-[0.9375rem] leading-relaxed [&_a]:text-link [&_a]:underline [&_a]:decoration-link [&_a]:underline-offset-[3px] [&_a]:decoration-[1.5px] [&_a]:font-medium [&_a]:transition-smooth hover:[&_a]:text-link-hover hover:[&_a]:decoration-link-hover">
         {children}
 
         {link && (
