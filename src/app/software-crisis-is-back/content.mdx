@@ -1,0 +1,73 @@
+import MdxLayout from '../components/mdx-layout'
+
+export const date = "2026-01-16"
+
+# The Software Crisis Is Back, and This Time It's Wearing a Different Mask
+
+In 1968, a group of programmers and academics gathered at a NATO conference in Garmisch, Germany, and gave a name to the chaos they were living through: the Software Crisis. Hardware had gotten powerful faster than anyone anticipated, and suddenly, the ad-hoc methods that worked for small programs collapsed under the weight of what these new machines could theoretically do. Projects ran over budget. Code became unmanageable. Software that shipped was often inefficient, buggy, or didn't meet requirements at all.
+
+Edsger Dijkstra, in his 1972 Turing Award lecture, put it bluntly: "As long as there were no machines, programming was no problem at all; when we had a few weak computers, programming became a mild problem, and now we have gigantic computers, programming has become an equally gigantic problem."
+
+The industry eventually clawed its way out. Structured programming. Object-oriented design. Version control. Code review practices. Agile methodologies. These weren't just nice-to-haves—they were survival mechanisms. Abstractions that let humans reason about systems too large for any one person to hold in their head.
+
+I think we're entering a second software crisis. And the cause is, in a strange way, the same: capability has outpaced our ability to manage it.
+
+## The New Abundance Problem
+
+The original crisis happened because hardware got powerful faster than our programming practices could adapt. The new crisis is happening because *code generation* has gotten powerful faster than our management practices can adapt.
+
+Every senior engineer I talk to right now is saying some version of the same thing: they're drowning. Not in their own work—in everyone else's. Junior developers are shipping more code than ever. AI coding assistants have turned the bottleneck of "getting code written" into a fire hose. And all that output has to go somewhere.
+
+It goes to code review. It goes to architectural discussions. It goes to debugging sessions where someone's trying to understand why the LLM-generated function works in isolation but breaks the system's invariants. It goes to the senior engineers, because that's where questions of correctness and coherence have always gone.
+
+The irony is painful: tools that were supposed to multiply productivity are creating new bottlenecks at exactly the points where humans are still essential.
+
+## What the First Crisis Taught Us
+
+The 1968 crisis wasn't solved by telling programmers to work harder or review code faster. It was solved by building better abstractions—mental and technical scaffolding that let people manage complexity without having to hold all of it in their heads at once.
+
+Procedural programming gave us subroutines and modules. Object-oriented programming gave us encapsulation and inheritance. Version control gave us the ability to reason about change over time. Type systems gave us machine-checkable contracts between components. None of these eliminated complexity; they *contained* it. They created boundaries that let teams work in parallel without constantly breaking each other's code.
+
+The lesson: when the volume of something exceeds human capacity to manage it directly, you don't just add more humans. You change the structure of the problem.
+
+## What We're Missing Now
+
+Right now, we have extraordinary tools for *generating* code and almost no tools for *absorbing* it into existing systems safely. The abstractions haven't caught up.
+
+Think about what a senior engineer actually does during code review. They're not just checking syntax or looking for obvious bugs—any linter can do that. They're asking: Does this fit our architecture? Does it maintain our invariants? Will it compose well with features we're planning to build next quarter? Does it introduce subtle dependencies that will bite us later? Is the abstraction level right, or is this solving today's problem in a way that makes tomorrow's problem harder?
+
+These questions require system-level understanding. They require taste. They require the kind of judgment that comes from having been burned before. And crucially, they require *time*—time that becomes scarce when the volume of incoming code doubles or triples.
+
+We need new abstractions. Not abstractions for writing code, but abstractions for *integrating* code. Ways to express architectural intent that can be checked automatically. Ways to verify that a change maintains system properties without a human reading every line. Ways to catch category errors early, before they're buried under three layers of otherwise-correct implementation.
+
+## The Platform Gap
+
+There's a pattern in the history of computing: capability breakthroughs are followed by platform breakthroughs, and the platform breakthroughs are what actually unlock the value. The PC explosion of the 1980s was followed by operating systems and development environments that made the hardware usable. The internet's growth was followed by web frameworks and cloud platforms that made distributed systems tractable. Mobile hardware was followed by iOS and Android, which gave developers common ground to build on.
+
+LLMs are a capability breakthrough. We're still waiting for the platform breakthrough.
+
+What would that platform look like? I don't know exactly, but I can sketch some properties it might have. It would probably include richer ways to express what a system *should* do, not just what it *does*—something beyond tests, closer to formal specifications, but practical enough for everyday use. It might include architectural guardrails that are automatically enforced, so that certain classes of mistakes become impossible rather than just unlikely. It would almost certainly include better tools for understanding existing codebases, because integration is impossible without comprehension.
+
+Most importantly, it would shift the burden of proof. Right now, the default assumption is that new code is fine until a human proves otherwise. A better platform would make new code prove it belongs—prove it maintains invariants, prove it fits the architecture, prove it doesn't break what's already working.
+
+## The Human Element
+
+There's a tempting narrative that AI will eventually replace the need for this kind of platform—that language models will just get good enough to handle integration themselves. I'm skeptical. Not because I doubt the models will improve, but because integration is fundamentally about relationships between components, and those relationships are defined by human intentions that aren't always explicit in the code itself.
+
+When a senior engineer reviews code, they're drawing on a mental model of the system that includes not just what it does, but why it was built that way, what constraints shaped those decisions, and what might need to change in the future. That context lives in documentation (sometimes), in institutional memory (often), and in the heads of people who've been around long enough to remember (always). It's not fully recoverable from the code alone, and it's not fully expressible in any current formal system.
+
+This doesn't mean AI can't help. It means AI's help will be most valuable when it's embedded in platforms that make human intent legible—where the "why" is captured alongside the "what," and where architectural decisions are first-class objects that tools can reason about.
+
+## An Opportunity Disguised as a Problem
+
+The first software crisis gave us structured programming, object orientation, and the entire field of software engineering. It forced the industry to get serious about managing complexity, and the tools and practices that emerged made modern software possible.
+
+This crisis could do the same. The pressure that LLM-generated code is putting on review and integration processes is real, and it's not going away. But pressure creates incentive. The teams and companies that figure out how to absorb high volumes of code without sacrificing architectural coherence will have a genuine competitive advantage. The tools and platforms that enable this will find a massive market.
+
+If you're a senior engineer feeling overwhelmed right now, I don't have a quick fix. But I do have a frame: you're not failing to keep up with a solved problem. You're experiencing the friction of an unsolved one. The tooling hasn't caught up yet. The abstractions don't exist yet. That's frustrating, but it's also an opportunity. The first software crisis created the discipline of software engineering. This one might create something equally important: the discipline of software *integration* in an age of abundance.
+
+The machines have become several orders of magnitude more productive at generating code. Now we need to become equally good at deciding what to do with it.
+
+export default function BlogPostContent({ children }) {
+  return <MdxLayout date={date}>{children}</MdxLayout>
+}
